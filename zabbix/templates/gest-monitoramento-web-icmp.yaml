@@ -1,0 +1,129 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: e601af49d1d7433fb98d565188559f68
+      name: GEST
+  templates:
+    - uuid: 6bdcc58cb0c14050868a868cfd2069d0
+      template: 'GEST API HTTPS'
+      name: 'GEST - API HTTPS'
+      description: 'Padrão GEST de disponibilidade. Coleta pelo servidor/proxy, sem agente. HTTP 200 após redirecionamentos, validação TLS, três falhas consecutivas e recuperação na primeira resposta válida. Configure as URLs nas macros do host. O template de site inclui ICMP usando o IP/DNS da interface principal do host. O complemento de API pode ser vinculado a hosts que também tenham API.'
+      groups:
+        - name: GEST
+      httptests:
+        - uuid: b35b1d915c2c45ea84134cede6d0b7e0
+          name: 'Disponibilidade API'
+          delay: '{$MONITOR.INTERVAL}'
+          verify_peer: 'YES'
+          verify_host: 'YES'
+          steps:
+            - name: 'Página inicial'
+              url: '{$API.URL}'
+              timeout: '{$MONITOR.TIMEOUT}'
+              status_codes: '200'
+          tags:
+            - tag: component
+              value: api
+            - tag: service
+              value: '{$SERVICE.NAME}'
+      macros:
+        - macro: '{$API.URL}'
+          description: 'Obrigatório: URL completa da API a monitorar. Configure no host.'
+        - macro: '{$MONITOR.INTERVAL}'
+          value: 1m
+          description: 'Intervalo das verificações HTTP e ICMP.'
+        - macro: '{$MONITOR.TIMEOUT}'
+          value: 15s
+          description: 'Tempo limite de cada etapa HTTP.'
+        - macro: '{$SERVICE.NAME}'
+          value: Aplicação
+          description: 'Nome do serviço exibido nos alertas e tags. Sobrescreva no host.'
+    - uuid: 88b5d95d55bb4ddaa47e36b13a0ef5e4
+      template: 'GEST Website HTTPS and ICMP'
+      name: 'GEST - Site HTTPS e Ping'
+      description: 'Padrão GEST de disponibilidade. Coleta pelo servidor/proxy, sem agente. HTTP 200 após redirecionamentos, validação TLS, três falhas consecutivas e recuperação na primeira resposta válida. Configure as URLs nas macros do host. O template de site inclui ICMP usando o IP/DNS da interface principal do host. O complemento de API pode ser vinculado a hosts que também tenham API.'
+      groups:
+        - name: GEST
+      items:
+        - uuid: 742d7d9f73084fe3a8894f267ef5a353
+          name: 'Disponibilidade: resposta ao ping'
+          type: SIMPLE
+          key: icmpping
+          delay: '{$MONITOR.INTERVAL}'
+          history: 7d
+          trends: 90d
+          description: 'ICMP da interface principal do host, executado pelo servidor/proxy. 1 = responde; 0 = sem resposta.'
+          tags:
+            - tag: component
+              value: network
+            - tag: service
+              value: '{$SERVICE.NAME}'
+          triggers:
+            - uuid: 12df55d353c2433ca84470838bc2e75a
+              expression: 'count(/GEST Website HTTPS and ICMP/icmpping,#3,"eq",0)=3'
+              name: '{$SERVICE.NAME}: IP sem resposta ao ping'
+              priority: HIGH
+              description: 'ICMP sem resposta durante três verificações consecutivas, a cada {$MONITOR.INTERVAL}. Recupera na primeira resposta válida. Independente do teste HTTP.'
+              tags:
+                - tag: component
+                  value: network
+                - tag: scope
+                  value: availability
+                - tag: service
+                  value: '{$SERVICE.NAME}'
+      httptests:
+        - uuid: bb6d537ad96a49ad8db2c65e76609e5c
+          name: 'Disponibilidade Site'
+          delay: '{$MONITOR.INTERVAL}'
+          verify_peer: 'YES'
+          verify_host: 'YES'
+          steps:
+            - name: 'Página inicial'
+              url: '{$WEB.URL}'
+              timeout: '{$MONITOR.TIMEOUT}'
+              status_codes: '200'
+          tags:
+            - tag: component
+              value: website
+            - tag: service
+              value: '{$SERVICE.NAME}'
+      macros:
+        - macro: '{$MONITOR.INTERVAL}'
+          value: 1m
+          description: 'Intervalo das verificações HTTP e ICMP.'
+        - macro: '{$MONITOR.TIMEOUT}'
+          value: 15s
+          description: 'Tempo limite de cada etapa HTTP.'
+        - macro: '{$SERVICE.NAME}'
+          value: Aplicação
+          description: 'Nome do serviço exibido nos alertas e tags. Sobrescreva no host.'
+        - macro: '{$WEB.LABEL}'
+          value: site
+          description: 'Nome do componente nos alertas: site ou front.'
+        - macro: '{$WEB.URL}'
+          description: 'Obrigatório: URL completa do site/front a monitorar. Configure no host.'
+  triggers:
+    - uuid: 2c7bc81e893d4009949163683df6db03
+      expression: 'count(/GEST API HTTPS/web.test.fail[Disponibilidade API],#3,"gt",0)=3'
+      name: '{$SERVICE.NAME}: API indisponível'
+      priority: HIGH
+      description: 'Falha quando a URL não retorna HTTP 200 após redirecionamentos durante três verificações consecutivas. Intervalo: {$MONITOR.INTERVAL}; timeout: {$MONITOR.TIMEOUT}. Recupera na primeira resposta válida. O certificado TLS é validado.'
+      tags:
+        - tag: component
+          value: api
+        - tag: scope
+          value: availability
+        - tag: service
+          value: '{$SERVICE.NAME}'
+    - uuid: 73a197e15caf40f5befd46a200a04a74
+      expression: 'count(/GEST Website HTTPS and ICMP/web.test.fail[Disponibilidade Site],#3,"gt",0)=3'
+      name: '{$SERVICE.NAME}: {$WEB.LABEL} indisponível'
+      priority: HIGH
+      description: 'Falha quando a URL não retorna HTTP 200 após redirecionamentos durante três verificações consecutivas. Intervalo: {$MONITOR.INTERVAL}; timeout: {$MONITOR.TIMEOUT}. Recupera na primeira resposta válida. O certificado TLS é validado.'
+      tags:
+        - tag: component
+          value: website
+        - tag: scope
+          value: availability
+        - tag: service
+          value: '{$SERVICE.NAME}'

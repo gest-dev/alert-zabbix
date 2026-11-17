@@ -1,0 +1,203 @@
+# Após importar, aplicar ajustes herdados omitidos pelo exportador Zabbix 6.4:
+# python3 zabbix/configurar_alertas_disco.py --template GEST-cpu-hd-mysql
+# python3 zabbix/configurar_alerta_agente_rapido.py --template GEST-cpu-hd-mysql
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: e601af49d1d7433fb98d565188559f68
+      name: GEST
+  templates:
+    - uuid: 746ac425d59e4da2b01e98b787a9ed47
+      template: GEST-cpu-hd-mysql
+      name: GEST-cpu-hd-mysql
+      description: 'CPU, carga, memória, espaço e inodes dos sistemas de arquivos, desempenho de discos, rede, agente e ICMP herdados de GEST - Banco Linux e Ping. Disponibilidade básica do MySQL/MariaDB: quantidade de processos mysqld e mariadbd e conexão TCP local na porta configurada. Não requer usuário ou senha MySQL. Alerta alto após três verificações consecutivas sem processo ou sem conexão; recupera na primeira resposta válida. O alerta de porta depende do alerta de processo para evitar duplicidade. A verificação confirma processo/porta, não executa consultas SQL. Limites Linux herdados: CPU 90%, disco aviso 90% e alerta alto 95%; ajustar macros conforme o servidor. Alertas de ocupação de todos os sistemas de arquivos descobertos: aviso em 90% e alto em 95%, após três coletas consecutivas, com recuperação abaixo de 88% e 93%. Os protótipos herdados de pouco espaço são desativados somente neste template para evitar duplicidade.'
+      templates:
+        - name: 'GEST Database Linux and ICMP'
+      groups:
+        - name: GEST
+      items:
+        - uuid: f492b66c364e457ebf53f87163fcb85c
+          name: 'Zabbix agent: conexão TCP rápida'
+          type: SIMPLE
+          key: 'net.tcp.service[tcp,,{$GEST.AGENT.PORT}]'
+          delay: '{$GEST.AGENT.CHECK.INTERVAL}'
+          history: 7d
+          trends: 90d
+          description: 'Servidor/proxy verifica a porta TCP do agente, independentemente da espera do poller de agentes indisponíveis. Confirma conectividade TCP, não a execução das métricas. Cinco falhas consecutivas abrem alerta; uma resposta positiva recupera.'
+          valuemap:
+            name: 'GEST - Conexão agente TCP'
+          tags:
+            - tag: component
+              value: zabbix-agent
+            - tag: scope
+              value: availability
+          triggers:
+            - uuid: e2a8d3778b0445778a7f56f9182d539e
+              expression: 'count(/GEST-cpu-hd-mysql/net.tcp.service[tcp,,{$GEST.AGENT.PORT}],#5,"eq",0)=5'
+              name: '{HOST.NAME}: conexão com o agente Zabbix indisponível'
+              opdata: 'Conexão TCP: {ITEM.LASTVALUE1}'
+              priority: AVERAGE
+              description: 'Cinco falhas TCP consecutivas, com coleta padrão a cada 5 segundos. Objetivo de detecção da perda de conexão em aproximadamente 30–40 segundos, incluindo timeout e processamento. Recupera na primeira conexão bem-sucedida. Latência de entrega do mensageiro não é garantida.'
+              tags:
+                - tag: component
+                  value: zabbix-agent
+                - tag: scope
+                  value: availability
+        - uuid: acde3f4937ee4354b540069504944367
+          name: 'MySQL: porta local disponível'
+          key: 'net.tcp.service[tcp,{$MYSQL.HOST},{$MYSQL.PORT}]'
+          delay: '{$MYSQL.INTERVAL}'
+          history: 7d
+          trends: 90d
+          description: '1 = conexão TCP local aceita; 0 = indisponível. Não autentica nem executa SQL.'
+          valuemap:
+            name: 'GEST - Disponibilidade MySQL'
+          tags:
+            - tag: component
+              value: mysql
+            - tag: scope
+              value: availability
+          triggers:
+            - uuid: a2c8b0c2cfed45579e69c5672217564f
+              expression: 'count(/GEST-cpu-hd-mysql/net.tcp.service[tcp,{$MYSQL.HOST},{$MYSQL.PORT}],#3,"eq",0)=3'
+              name: '{HOST.NAME}: MySQL sem conexão na porta {$MYSQL.PORT}'
+              priority: HIGH
+              description: 'A porta configurada não aceita conexão local por três coletas consecutivas. Não verifica autenticação SQL.'
+              dependencies:
+                - name: '{HOST.NAME}: MySQL parado'
+                  expression: 'count(/GEST-cpu-hd-mysql/proc.num[mysqld],#3,"eq",0)=3 and count(/GEST-cpu-hd-mysql/proc.num[mariadbd],#3,"eq",0)=3'
+              tags:
+                - tag: component
+                  value: mysql
+                - tag: scope
+                  value: availability
+        - uuid: 751bc57a43e54e6c816b7248fc076fb2
+          name: 'MySQL: processos mariadbd'
+          key: 'proc.num[mariadbd]'
+          delay: '{$MYSQL.INTERVAL}'
+          history: 7d
+          trends: 90d
+          description: 'Quantidade de processos do servidor MariaDB; alternativa ao mysqld.'
+          tags:
+            - tag: component
+              value: mysql
+            - tag: scope
+              value: availability
+        - uuid: 760944d6af91445ea6b8f38d72c64534
+          name: 'MySQL: processos mysqld'
+          key: 'proc.num[mysqld]'
+          delay: '{$MYSQL.INTERVAL}'
+          history: 7d
+          trends: 90d
+          description: 'Quantidade de processos do servidor MySQL.'
+          tags:
+            - tag: component
+              value: mysql
+            - tag: scope
+              value: availability
+        - uuid: fde19cd872e74af69e3bfe8113f30d50
+          name: 'Disco /: espaço livre'
+          key: 'vfs.fs.size[/,free]'
+          history: 7d
+          trends: 90d
+          units: B
+          description: 'Espaço livre disponível no sistema de arquivos raiz, coletado localmente pelo agente para os indicadores do dashboard. As descobertas e alertas de ocupação Linux continuam herdados.'
+          tags:
+            - tag: component
+              value: storage
+      tags:
+        - tag: scope
+          value: linux-database
+        - tag: service
+          value: mysql
+      macros:
+        - macro: '{$GEST.AGENT.CHECK.INTERVAL}'
+          value: 5s
+          description: 'Intervalo da checagem TCP rápida. Alerta após cinco falhas consecutivas.'
+        - macro: '{$GEST.AGENT.PORT}'
+          value: '10050'
+          description: 'Porta TCP do agente, consultada pelo servidor/proxy.'
+        - macro: '{$GEST.FS.PUSED.CRIT}'
+          value: '95'
+          description: 'Percentual para alerta alto de ocupação; exige três coletas consecutivas.'
+        - macro: '{$GEST.FS.PUSED.CRIT.RECOVERY}'
+          value: '93'
+          description: 'Recupera o alerta alto abaixo deste percentual.'
+        - macro: '{$GEST.FS.PUSED.WARN}'
+          value: '90'
+          description: 'Percentual para aviso de ocupação; exige três coletas consecutivas.'
+        - macro: '{$GEST.FS.PUSED.WARN.RECOVERY}'
+          value: '88'
+          description: 'Recupera o aviso abaixo deste percentual.'
+        - macro: '{$MYSQL.HOST}'
+          value: 127.0.0.1
+          description: 'Endereço local do MySQL acessível pelo agente; não é uma conexão do servidor Zabbix diretamente ao banco.'
+        - macro: '{$MYSQL.INTERVAL}'
+          value: 1m
+          description: 'Intervalo para verificar os processos e a porta local do MySQL/MariaDB.'
+        - macro: '{$MYSQL.PORT}'
+          value: '3306'
+          description: 'Porta local do serviço MySQL/MariaDB.'
+      valuemaps:
+        - uuid: 8ba8e87874d5427097138a24e3bed237
+          name: 'GEST - Conexão agente TCP'
+          mappings:
+            - value: '0'
+              newvalue: Indisponível
+            - value: '1'
+              newvalue: Disponível
+        - uuid: 66d03b695483450893d85ca5aac2b2d0
+          name: 'GEST - Disponibilidade MySQL'
+          mappings:
+            - value: '0'
+              newvalue: Indisponível
+            - value: '1'
+              newvalue: Disponível
+    - uuid: e05d8232a70a4f1f8ca5b50f637a3154
+      template: 'GEST Database Linux and ICMP'
+      name: 'GEST - Banco Linux e Ping'
+      description: 'Monitoramento do servidor Linux pelo agente Zabbix e ICMP independente. Coleta CPU, memória, disco e disponibilidade do agente pelo template oficial Linux. O ping usa a interface principal do host, com alerta após três falhas consecutivas e recuperação na primeira resposta válida. Métricas internas do MySQL exigem configuração própria de acesso ao banco.'
+      templates:
+        - name: 'Linux by Zabbix agent'
+      groups:
+        - name: GEST
+      items:
+        - uuid: 2835152332724632b996680377ddc12b
+          name: 'Disponibilidade: resposta ao ping'
+          type: SIMPLE
+          key: icmpping
+          delay: '{$MONITOR.INTERVAL}'
+          history: 7d
+          trends: 90d
+          description: 'ICMP da interface principal do host. 1 = responde; 0 = sem resposta. Executado pelo servidor/proxy.'
+          tags:
+            - tag: component
+              value: network
+            - tag: scope
+              value: availability
+          triggers:
+            - uuid: 713dd835e47f4aaeb9dc0adeabe7c82f
+              expression: 'count(/GEST Database Linux and ICMP/icmpping,#3,"eq",0)=3'
+              name: '{HOST.NAME}: IP sem resposta ao ping'
+              priority: HIGH
+              description: 'Sem resposta ao ICMP por três verificações consecutivas. Intervalo padrão de 1 minuto. Recupera na primeira resposta válida.'
+              tags:
+                - tag: component
+                  value: network
+                - tag: scope
+                  value: availability
+      macros:
+        - macro: '{$MONITOR.INTERVAL}'
+          value: 1m
+          description: 'Intervalo das verificações ICMP.'
+  triggers:
+    - uuid: 381d8354d979427ba66f8285f2561c7e
+      expression: 'count(/GEST-cpu-hd-mysql/proc.num[mysqld],#3,"eq",0)=3 and count(/GEST-cpu-hd-mysql/proc.num[mariadbd],#3,"eq",0)=3'
+      name: '{HOST.NAME}: MySQL parado'
+      priority: HIGH
+      description: 'Nenhum processo mysqld ou mariadbd em três coletas consecutivas. Recupera quando qualquer um volta a existir.'
+      tags:
+        - tag: component
+          value: mysql
+        - tag: scope
+          value: availability

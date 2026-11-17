@@ -1,0 +1,7 @@
+{
+  "uuid": "alert-zabbix@gezer.local",
+  "name": "Alertas Zabbix",
+  "description": "Problemas atuais do Zabbix 6.4 na barra do Ubuntu, com avisos na tela.",
+  "shell-version": ["50"],
+  "version": 8
+}

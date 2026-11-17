@@ -1,0 +1,154 @@
+# Após importar, aplicar ajustes herdados omitidos pelo exportador Zabbix 6.4:
+# python3 zabbix/configurar_alertas_disco.py --template GEST-cpu-hd-nginx-php
+# python3 zabbix/configurar_alerta_agente_rapido.py --template GEST-cpu-hd-nginx-php
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: e601af49d1d7433fb98d565188559f68
+      name: GEST
+  templates:
+    - uuid: c11a3dc741c14f2d903e8a78e51753ee
+      template: GEST-cpu-hd-nginx-php
+      name: GEST-cpu-hd-nginx-php
+      description: 'Servidor web Linux com CPU, memória, disco, rede e disponibilidade do agente. Adiciona espaço livre do disco raiz e contagem de processos Nginx e PHP-FPM. Alerta alto após três coletas consecutivas sem processo; recupera na primeira coleta com processo. Não usa MySQL. Vincular mantendo o template de site HTTPS e ping existente; este template não adiciona ICMP para evitar duplicidade. Requer validar o acesso ao agente e o uso real de PHP-FPM antes de ativar. Alertas de ocupação por percentual 90%/95% são configurados pelo script configurar_alertas_disco.py --template GEST-cpu-hd-nginx-php.'
+      templates:
+        - name: 'Linux by Zabbix agent'
+      groups:
+        - name: GEST
+      items:
+        - uuid: b125fb1f707d446388bc6d7b48d4d892
+          name: 'Zabbix agent: conexão TCP rápida'
+          type: SIMPLE
+          key: 'net.tcp.service[tcp,,{$GEST.AGENT.PORT}]'
+          delay: '{$GEST.AGENT.CHECK.INTERVAL}'
+          history: 7d
+          trends: 90d
+          description: 'Servidor/proxy verifica a porta TCP do agente, independentemente da espera do poller de agentes indisponíveis. Confirma conectividade TCP, não a execução das métricas. Cinco falhas consecutivas abrem alerta; uma resposta positiva recupera.'
+          valuemap:
+            name: 'GEST - Conexão agente TCP'
+          tags:
+            - tag: component
+              value: zabbix-agent
+            - tag: scope
+              value: availability
+          triggers:
+            - uuid: 40171d278ad048d1b62895cf0cc996ee
+              expression: 'count(/GEST-cpu-hd-nginx-php/net.tcp.service[tcp,,{$GEST.AGENT.PORT}],#5,"eq",0)=5'
+              name: '{HOST.NAME}: conexão com o agente Zabbix indisponível'
+              opdata: 'Conexão TCP: {ITEM.LASTVALUE1}'
+              priority: AVERAGE
+              description: 'Cinco falhas TCP consecutivas, com coleta padrão a cada 5 segundos. Objetivo de detecção da perda de conexão em aproximadamente 30–40 segundos, incluindo timeout e processamento. Recupera na primeira conexão bem-sucedida. Latência de entrega do mensageiro não é garantida.'
+              tags:
+                - tag: component
+                  value: zabbix-agent
+                - tag: scope
+                  value: availability
+        - uuid: 36d5aa9fdec14d3b96bcbd0de873599b
+          name: 'PHP-FPM: processos em execução'
+          key: 'proc.num[,,,"{$PHP.FPM.PROCESS.MATCHES}"]'
+          delay: '{$WEB.SERVICE.INTERVAL}'
+          history: 7d
+          trends: 90d
+          description: 'Quantidade de processos PHP-FPM que correspondem à expressão da macro. Detecta se o serviço está rodando; não executa PHP nem faz requisições SQL.'
+          valuemap:
+            name: 'GEST - Processo do serviço'
+          tags:
+            - tag: component
+              value: php-fpm
+            - tag: scope
+              value: availability
+          triggers:
+            - uuid: 28332b0a358c4cb6941ff0390d48a36f
+              expression: 'count(/GEST-cpu-hd-nginx-php/proc.num[,,,"{$PHP.FPM.PROCESS.MATCHES}"],#3,"eq",0)=3'
+              name: '{HOST.NAME}: PHP-FPM parado'
+              opdata: 'Processos: {ITEM.LASTVALUE1}'
+              priority: HIGH
+              description: 'Nenhum processo do serviço por três coletas consecutivas. Recupera na primeira coleta com processo. A perda de comunicação com o agente é tratada pelo alerta Linux herdado.'
+              tags:
+                - tag: component
+                  value: php-fpm
+                - tag: scope
+                  value: availability
+        - uuid: 359f4e8cb3a04d43955340fb659dbc8a
+          name: 'Nginx: processos em execução'
+          key: 'proc.num[nginx]'
+          delay: '{$WEB.SERVICE.INTERVAL}'
+          history: 7d
+          trends: 90d
+          description: 'Quantidade de processos Nginx. A presença do processo é complementada pelo teste HTTPS do host.'
+          valuemap:
+            name: 'GEST - Processo do serviço'
+          tags:
+            - tag: component
+              value: nginx
+            - tag: scope
+              value: availability
+          triggers:
+            - uuid: 21180881c01945228907a3b6214eca2c
+              expression: 'count(/GEST-cpu-hd-nginx-php/proc.num[nginx],#3,"eq",0)=3'
+              name: '{HOST.NAME}: Nginx parado'
+              opdata: 'Processos: {ITEM.LASTVALUE1}'
+              priority: HIGH
+              description: 'Nenhum processo do serviço por três coletas consecutivas. Recupera na primeira coleta com processo. A perda de comunicação com o agente é tratada pelo alerta Linux herdado.'
+              tags:
+                - tag: component
+                  value: nginx
+                - tag: scope
+                  value: availability
+        - uuid: 58fae659a49b4beaa762712273060064
+          name: 'Disco /: espaço livre'
+          key: 'vfs.fs.size[/,free]'
+          delay: '{$WEB.SERVICE.INTERVAL}'
+          history: 7d
+          trends: 90d
+          units: B
+          description: 'Espaço livre disponível no sistema de arquivos raiz.'
+          tags:
+            - tag: component
+              value: storage
+            - tag: scope
+              value: capacity
+      tags:
+        - tag: scope
+          value: linux-web
+      macros:
+        - macro: '{$GEST.AGENT.CHECK.INTERVAL}'
+          value: 5s
+          description: 'Intervalo da checagem TCP rápida. Alerta após cinco falhas consecutivas.'
+        - macro: '{$GEST.AGENT.PORT}'
+          value: '10050'
+          description: 'Porta TCP do agente, consultada pelo servidor/proxy.'
+        - macro: '{$GEST.FS.PUSED.CRIT}'
+          value: '95'
+          description: 'Percentual para alerta alto de ocupação; exige três coletas consecutivas.'
+        - macro: '{$GEST.FS.PUSED.CRIT.RECOVERY}'
+          value: '93'
+          description: 'Recupera o alerta alto abaixo deste percentual.'
+        - macro: '{$GEST.FS.PUSED.WARN}'
+          value: '90'
+          description: 'Percentual para aviso de ocupação; exige três coletas consecutivas.'
+        - macro: '{$GEST.FS.PUSED.WARN.RECOVERY}'
+          value: '88'
+          description: 'Recupera o aviso abaixo deste percentual.'
+        - macro: '{$PHP.FPM.PROCESS.MATCHES}'
+          value: '(^|/)php-fpm([0-9.]+)?(:|[[:space:]]|$)'
+          description: 'Expressão para a linha de comando do processo PHP-FPM, incluindo versões como php-fpm8.3. Validar conforme o servidor; PHP CLI ou outros runtimes exigem outra verificação.'
+        - macro: '{$WEB.SERVICE.INTERVAL}'
+          value: 1m
+          description: 'Intervalo de verificação dos processos Nginx e PHP-FPM.'
+      valuemaps:
+        - uuid: d662cff82489493aae409ef7ee69b09c
+          name: 'GEST - Conexão agente TCP'
+          mappings:
+            - value: '0'
+              newvalue: Indisponível
+            - value: '1'
+              newvalue: Disponível
+        - uuid: 3e3053dbfc924bdf90dfe2a81c92b588
+          name: 'GEST - Processo do serviço'
+          mappings:
+            - value: '0'
+              newvalue: Parado
+            - type: GREATER_OR_EQUAL
+              value: '1'
+              newvalue: Rodando

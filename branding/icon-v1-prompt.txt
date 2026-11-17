@@ -1,0 +1,9 @@
+Mode: built-in image_gen. Use case: logo-brand. Generated 2026-11-16.
+Final asset: extension/icons/org.gezer.AlertZabbix.png
+Original: /home/gezer/.codex/generated_images/01a1e543-6348-7472-b65d-1da62a45ee87/exec-65101bbd-b406-4013-a033-79c87290840a.png
+
+Prompt:
+Use case: logo-brand. Asset type: a production desktop app icon for a native Ubuntu application named Alertas Zabbix, part of a family of dark green system-monitoring tools. Create one original, polished, simple app icon, no text, no lettering, no mockup. Centered rounded-square charcoal green tile (#101411), gently rounded corners, a bold emerald green shield silhouette (#22c55e / #4ade80) holding one crisp white monitoring pulse waveform, and one small warm amber notification dot at the upper-right edge of the shield. The shield and pulse should be a single coherent mark with generous negative space, strong chunky shapes readable at 32px, clean vector-like precision, restrained depth, no shiny 3D effects, no fine details. Icon fills about 84 percent of a square image with balanced transparent padding; background outside the rounded-square tile is truly transparent, including all corners. Straight-on frontal view, square 1024x1024 composition. Deliver the standalone app icon only. No words, letters, watermarks, gradients spreading beyond the tile, glow, extra icons, frames, sheet, UI, or presentation.
+
+The generated PNG is preserved without cropping, resizing or alpha edits.
+The matching monochrome SVG is a native vector asset for small GNOME panel sizes.
