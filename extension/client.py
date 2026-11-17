@@ -48,7 +48,7 @@ def normalize(config, require_connection=False):
     if require_connection and result['auth_mode'] == 'password' and not result['username']:
         raise MonitorError('Informe o usuário da interface web do Zabbix.', 'config')
     try:
-        result['interval'] = max(30, min(900, int(result['interval'])))
+        result['interval'] = max(10, min(900, int(result['interval'])))
         result['min_severity'] = max(0, min(5, int(result['min_severity'])))
     except (ValueError, TypeError):
         raise MonitorError('Intervalo ou severidade inválidos.', 'config') from None

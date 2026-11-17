@@ -84,7 +84,7 @@ representa a escolha; ela não confirma o estado atual do indicador.
 
 ## Comportamento
 
-- Atualiza a cada 30 segundos por padrão, configurável entre 30 e 900 segundos.
+- Atualiza a cada 30 segundos por padrão, configurável entre 10 e 900 segundos.
 - Permite filtrar pela severidade mínima.
 - Consulta problemas não resolvidos e não suprimidos, visíveis ao usuário da API.
 - Hosts com monitoramento desativado no Zabbix ficam fora da lista, do contador

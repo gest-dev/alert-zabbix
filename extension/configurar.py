@@ -241,7 +241,7 @@ class ConfigurationWindow(Adw.ApplicationWindow):
         body.append(self.window_group)
         self.monitor_group = Adw.PreferencesGroup(title='Monitoramento', description='Somente problemas atuais de hosts com monitoramento habilitado.')
         body.append(self.monitor_group)
-        self.interval = Adw.SpinRow(title='Atualização em segundos', adjustment=Gtk.Adjustment(value=config['interval'], lower=30, upper=900, step_increment=15))
+        self.interval = Adw.SpinRow(title='Atualização em segundos', adjustment=Gtk.Adjustment(value=config['interval'], lower=10, upper=900, step_increment=5))
         self.severity = Adw.ComboRow(title='Mostrar a partir de', model=Gtk.StringList.new(SEVERITIES), selected=config['min_severity'])
         self.notifications = Adw.SwitchRow(title='Avisos na tela', subtitle='Problemas novos e aumento de gravidade', active=config['notifications'])
         for row in (self.interval, self.severity, self.notifications):

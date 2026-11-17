@@ -135,7 +135,7 @@ class ClientTests(unittest.TestCase):
             with self.assertRaises(MonitorError):
                 normalize(dict(url=url))
         self.assertEqual(normalize(dict(url=TEST_CONFIG['url'] + '/api_jsonrpc.php'))['url'], TEST_CONFIG['url'])
-        self.assertEqual(normalize(dict(interval=1))['interval'], 30)
+        self.assertEqual(normalize(dict(interval=1))['interval'], 10)
 
     def test_credentials_are_not_forwarded_on_redirect(self):
         self.assertIsNone(NoRedirect().redirect_request(None, None, 307, '', {}, 'https://other-host/'))
