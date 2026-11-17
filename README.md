@@ -1,4 +1,16 @@
-# Alertas Zabbix
+<p align="center">
+  <img src="extension/icons/org.gezer.AlertZabbix.png" width="88" alt="Ícone do Alertas Zabbix">
+</p>
+
+# 🛡️ Alertas Zabbix
+
+![Alertas Zabbix: acompanhamento, consultas e avisos](docs/banner.svg)
+
+**Acompanhe os problemas do Zabbix sem manter o dashboard aberto.**
+
+[Prints](#-em-funcionamento) · [Começar](#-instalação) · [Conectar](#-conexão) · [Personalizar](#-aparência-e-posição-na-barra) · [Alertas](#-comportamento) · [Templates](#-templates-de-monitoramento-no-zabbix) · [Ajuda](#-dúvidas-e-soluções)
+
+---
 
 Extensão independente para Ubuntu/GNOME 50, integrada à API do Zabbix 6.4.
 Mostra permanentemente na barra a quantidade de problemas ativos, a maior
@@ -9,12 +21,64 @@ severidade, duração e reconhecimento em cartões, além da hora da consulta. C
 no navegador. A lista do menu mostra até 40 problemas; o contador inclui todos
 os problemas do filtro e há um link para consultar a lista completa no Zabbix.
 
-## Instalação
+## ✨ O que você encontra
+
+| Recurso | Como funciona |
+| :--- | :--- |
+| 🟢 Indicador permanente | Quantidade de problemas e destaque para a maior gravidade. |
+| 🖥️ Problemas por host | Cartões com severidade, duração, reconhecimento e acesso ao evento. |
+| 🔔 Avisos do Ubuntu | Resumo inicial e notificações de problemas novos ou com gravidade aumentada. |
+| 🎨 Aparência ajustável | Posição à esquerda/direita, tema, letras, ícone e espaçamento. |
+| 🔐 Conexão configurável | Usuário/senha ou token de API, com credenciais no chaveiro do Ubuntu. |
+| 🧩 Templates GEST | Materiais separados para sites, servidores web, banco e notificações. |
+
+```text
+Sem problemas:       Zabbix OK
+Com problemas:       Zabbix 5 · 1 alto
+Falha na consulta:   !  + horário da última consulta válida no menu
+```
+
+Os exemplos ilustram o indicador; os valores reais vêm do seu servidor.
+
+## 📸 Em funcionamento
+
+Capturas da interface real em uma sessão GNOME isolada, em **17/11/2026**.
+O problema exibido é um **dado de teste identificado**; as telas de configuração
+estão sem endereço, usuário ou credencial pessoal.
+
+### Indicador e problemas atuais
+
+O indicador destaca a maior gravidade. Ao clicar, o menu mostra o host, o
+problema, a duração e os atalhos de atualização e configuração.
+
+![Barra e menu do Alertas Zabbix com um problema de teste de gravidade alta](docs/screenshots/problemas.png)
+
+<details>
+<summary><strong>Ver as telas de conexão e personalização</strong></summary>
+
+### Configuração da conexão
+
+Endereço e autenticação são preenchidos pela interface, com botões para testar
+e salvar o acesso.
+
+![Tela de conexão do Alertas Zabbix com campos vazios e opções de teste e salvamento](docs/screenshots/conexao.png)
+
+### Aparência e posição
+
+Prévia da barra e ajustes de posição, tamanho da letra, ícone e espaçamento.
+
+![Tela de aparência do Alertas Zabbix com prévia da posição e ajustes de tamanho](docs/screenshots/aparencia.png)
+
+</details>
+
+## 🚀 Instalação
 
 ```bash
 cd /var/www/html/alert_zabbix
 python3 instalar.py
 ```
+
+> **Depois de atualizar:** salve o trabalho e saia/entre na sessão se o GNOME ainda estiver usando o código anterior. O instalador não encerra a sessão por conta própria.
 
 O instalador não precisa de sudo, preserva as outras extensões e cria backup nas
 atualizações, em `${XDG_DATA_HOME:-~/.local/share}/alert-zabbix/backups`, fora do
@@ -24,7 +88,7 @@ saia da sessão do Ubuntu e entre novamente. A ativação fica salva para esse l
 O instalador não encerra a sessão. Dependências: GNOME 50, GJS, Python 3 com
 PyGObject, GTK 4, libadwaita e libsecret (Secret Service/chaveiro desbloqueado).
 
-## Conexão
+## 🔐 Conexão
 
 Abra **Alertas Zabbix** no menu de aplicativos ou **Configurar conexão** no indicador.
 Também é possível abrir a configuração diretamente:
@@ -52,7 +116,17 @@ se o endereço usa HTTP ou HTTPS; em HTTP o tráfego de autenticação não é
 criptografado. A validação de certificados HTTPS permanece habilitada.
 Redirecionamentos HTTP não são seguidos.
 
-## Aparência e posição na barra
+## 🎨 Aparência e posição na barra
+
+| Ajuste | Opções |
+| :--- | :--- |
+| Posição | Esquerda ou direita da barra do Ubuntu. |
+| Tema da janela | Escuro, claro ou seguir sistema. |
+| Letra na barra | 9–20 px. |
+| Ícone na barra | 10–32 px. |
+| Espaço entre ícone e texto | 2–20 px. |
+| Letra da janela | 11–18 px. |
+| Frequência da consulta | 10–900 s; padrão de 30 s. |
 
 O visual segue o Monitor Global: fundo escuro com destaque verde, cartões e
 informações separadas por função. A janela tem as abas **Conexão** e **Barra e avisos**.
@@ -82,7 +156,7 @@ aviso de atualização pendente e informa que a posição está salva para o pr�
 login. Esse aviso também se aplica aos tamanhos da letra e do ícone. A prévia
 representa a escolha; ela não confirma o estado atual do indicador.
 
-## Comportamento
+## 🔔 Comportamento
 
 - Atualiza a cada 30 segundos por padrão, configurável entre 10 e 900 segundos.
 - Permite filtrar pela severidade mínima.
@@ -112,10 +186,14 @@ representa a escolha; ela não confirma o estado atual do indicador.
 - Senhas são usadas em sessões curtas, encerradas após cada consulta. Tokens de API
   são usados diretamente e não recebem logout.
 
+> **Host desativado × host indisponível:** desativar o monitoramento exclui o host do aplicativo. Um host habilitado que parou de responder continua elegível para alertas gerados pelo Zabbix.
+
+> **Consulta × detecção:** escolher 10 s reduz a espera para buscar um problema já registrado. A frequência dos itens, as triggers e as ações do servidor determinam quando o Zabbix detecta e envia o alerta.
+
 O cliente foi preparado especificamente para Zabbix 6.4; outras versões apresentam
 uma mensagem de incompatibilidade. O UUID é `alert-zabbix@gezer.local`.
 
-## Desenvolvimento
+## 🛠️ Desenvolvimento
 
 ```bash
 bash empacotar.sh
@@ -132,7 +210,7 @@ Veja [VALIDACAO.md](VALIDACAO.md).
 
 Documentação oficial: [API do Zabbix 6.4](https://www.zabbix.com/documentation/6.4/en/manual/api).
 
-## Templates de monitoramento no Zabbix
+## 🧩 Templates de monitoramento no Zabbix
 
 Os templates reutilizáveis **GEST - Site HTTPS e Ping** e **GEST - API HTTPS** ficam
 em [zabbix/](zabbix/README.md), com exportação YAML para Zabbix 6.4 e instruções
@@ -144,7 +222,45 @@ e PHP-FPM para servidores web. As URLs e os IPs dos hosts não fazem
 parte dessa exportação. Os templates são configurados no servidor Zabbix;
 o aplicativo continua usando somente consultas de leitura.
 
-## Ícone do aplicativo
+### Documentação do servidor
+
+| Material | Conteúdo |
+| :--- | :--- |
+| [Templates e macros](zabbix/README.md) | Importação, configuração por host e modelos GEST. |
+| [Dashboard operacional](zabbix/DASHBOARD.md) | Organização por servidor, indicadores e log de ações. |
+| [WhatsApp e Telegram](zabbix/media/README.md) | Scripts de mídia, parâmetros e credenciais por macros. |
+| [Alertas de disco](zabbix/configurar_alertas_disco.py) | Script administrativo para a política de ocupação do disco. |
+| [Alerta rápido do agente](zabbix/configurar_alerta_agente_rapido.py) | Script administrativo para a verificação rápida de disponibilidade. |
+
+**Esses scripts administram o servidor Zabbix.** Leia suas opções e a documentação antes de executá-los; o indicador do Ubuntu mantém seu funcionamento somente de leitura.
+
+## 🧭 Dúvidas e soluções
+
+| Situação | O que conferir |
+| :--- | :--- |
+| Mudei a posição ou o tamanho e a barra não mudou | Veja se há aviso de atualização pendente. Salve o trabalho e entre novamente na sessão para carregar a extensão instalada. |
+| O menu mostra `!` | Confira rede/VPN, endereço do servidor e o horário da última consulta válida. |
+| As consultas automáticas pararam após um erro de acesso | Corrija usuário, token ou permissões e teste a conexão; depois use **Atualizar agora**. |
+| Um problema aparece no Zabbix, mas não no indicador | Confira permissões do usuário da API, severidade mínima, supressão e se host/trigger estão habilitados. |
+| O aviso não apareceu na tela | Confira **Avisar na tela**, as permissões de notificação e **Não perturbe** do Ubuntu. |
+| A senha não foi salva | Verifique se o chaveiro/Secret Service está disponível e desbloqueado. |
+
+## 🗂️ Mapa do projeto
+
+```text
+alert_zabbix/
+├── instalar.py             # Instalação na conta do usuário
+├── empacotar.sh            # Testes, validação de sintaxe e geração do ZIP
+├── extension/              # Indicador, cliente da API, configuração e ícones
+├── dist/                   # Pacote instalável
+├── tests/                  # Testes do cliente e da interface
+├── zabbix/                 # Templates, dashboard e mídias do servidor
+├── branding/               # Prompt da identidade visual
+├── docs/                   # Banner e capturas reais em screenshots/
+└── VALIDACAO.md            # Registro das verificações
+```
+
+## 🎯 Ícone do aplicativo
 
 A marca é um escudo verde com pulso de monitoramento e um ponto âmbar de alerta,
 sobre uma base escura com cantos arredondados. O PNG original com transparência
@@ -156,3 +272,7 @@ A barra e sua prévia usam a versão vetorial
 `extension/icons/alert-zabbix-symbolic.svg`, que acompanha os tamanhos configurados
 e recebe as cores da gravidade. A versão colorida foi preservada sem recorte ou
 redimensionamento do arquivo original.
+
+---
+
+**Documentação complementar:** [validação](VALIDACAO.md) · [templates GEST](zabbix/README.md) · [mídias e notificações](zabbix/media/README.md).
