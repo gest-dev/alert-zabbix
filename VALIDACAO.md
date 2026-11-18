@@ -70,3 +70,18 @@
   sessão. A sessão principal não foi encerrada ou reiniciada.
 
 As contagens refletem o momento da validação e podem mudar no servidor.
+
+## VPN L2TP/IPsec — 18/11/2026
+
+- A porta UDP de origem do xl2tpd no servidor Zabbix foi alterada para 17002,
+  com o seletor IPsec local correspondente; o destino L2TP permaneceu na 1701.
+- A intervenção na VM preservou as credenciais e a configuração do Ubuntu.
+  Foram usados backup privado e reversão automática, cancelada após os testes.
+- Sete amostras em aproximadamente dois minutos confirmaram a mesma sessão PPP,
+  rotas dos dois hosts pela VPN e `agent.ping=1` no banco e no servidor web.
+- O perfil passou a apresentar uma única sessão IPsec. Os serviços permaneceram
+  habilitados para inicialização.
+- O Ubuntu estava conectado por outro gateway na verificação final; a
+  coexistência dos dois clientes no mesmo gateway não foi validada.
+
+Procedimento, referências e limites: [VPN L2TP/IPsec](zabbix/VPN.md).

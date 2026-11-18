@@ -252,6 +252,13 @@ já instalado, sem substituí-lo: CPU, espaço livre e percentual de uso do disc
 Nginx e PHP-FPM receberam amostras recentes no Zabbix. A página
 **AtivBenefícios · Web** e os comparativos de servidores usam esses itens.
 
+## VPN do servidor e acesso aos agentes
+
+O [registro da VPN L2TP/IPsec](VPN.md) documenta a separação da porta UDP de origem
+do Zabbix para clientes atrás do mesmo NAT, o procedimento de recuperação e os
+testes de acesso aos agentes. A configuração é administrativa e fica na VM;
+não é aplicada pelo instalador do aplicativo nem pelos templates.
+
 ## Detecção rápida da perda de conexão com o agente
 
 Os templates **GEST-cpu-hd-mysql** e **GEST-cpu-hd-nginx-php** acrescentam uma
