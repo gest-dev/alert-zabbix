@@ -231,7 +231,7 @@ o aplicativo continua usando somente consultas de leitura.
 | [WhatsApp e Telegram](zabbix/media/README.md) | Scripts de mídia, parâmetros e credenciais por macros. |
 | [VPN L2TP/IPsec](zabbix/VPN.md) | Porta de origem própria, recuperação dos agentes e limites da validação. |
 | [Alertas de disco](zabbix/configurar_alertas_disco.py) | Script administrativo para a política de ocupação do disco. |
-| [Alerta rápido do agente](zabbix/configurar_alerta_agente_rapido.py) | Script administrativo para a verificação rápida de disponibilidade. |
+| [Alerta de conexão do agente](zabbix/configurar_alerta_agente_rapido.py) | Confirma 1 minuto de falha e 30 segundos de recuperação estável. |
 
 **Esses scripts administram o servidor Zabbix.** Leia suas opções e a documentação antes de executá-los; o indicador do Ubuntu mantém seu funcionamento somente de leitura.
 

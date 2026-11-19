@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Configura detecção rápida da perda da conexão TCP com os agentes GEST."""
+"""Configura confirmação de falha e recuperação da conexão TCP dos agentes GEST."""
 import argparse
 import json
 import os
@@ -16,14 +16,31 @@ NAME = '{HOST.NAME}: conexão com o agente Zabbix indisponível'
 LEGACY = 'Linux: Zabbix agent is not available'
 MACROS = {
     '{$GEST.AGENT.PORT}': ('10050', 'Porta TCP do agente, consultada pelo servidor/proxy.'),
-    '{$GEST.AGENT.CHECK.INTERVAL}': ('5s', 'Intervalo da checagem TCP rápida. Alerta após cinco falhas consecutivas.')
+    '{$GEST.AGENT.CHECK.INTERVAL}': ('5s', 'Intervalo da checagem TCP. Confirma falha por 1 minuto e recuperação por 30 segundos.')
 }
+ITEM_DESCRIPTION = ('Servidor/proxy verifica a porta TCP do agente, independentemente da espera '
+                    'do poller de agentes indisponíveis. Confirma conectividade TCP, não a '
+                    'execução das métricas. Abre alerta após 1 minuto de falhas observadas '
+                    'e recupera após 30 segundos de respostas positivas estáveis.')
+TRIGGER_DESCRIPTION = ('Confirma falha TCP por 1 minuto e recuperação por 30 segundos, '
+                       'com coleta padrão a cada 5 segundos. O valor no início de cada '
+                       'janela também é conferido para não confirmar estabilidade com '
+                       'uma única amostra após intervalo sem coleta. Timeout, processamento '
+                       'e entrega do mensageiro podem acrescentar atraso.')
+
+
+def connection_expressions(template_name):
+    item = f'/{template_name}/{KEY}'
+    # A amostra anterior ao início da janela impede confirmação antecipada
+    # quando todas as amostras disponíveis cobrem menos que o tempo exigido.
+    return (f'max({item},1m)=0 and last({item},#1:now-1m)=0',
+            f'min({item},30s)=1 and last({item},#1:now-30s)=1')
 
 
 def configure(api, template_name):
     found = api.call('template.get', {
         'filter': {'host': [template_name]}, 'output': ['templateid', 'host'],
-        'selectMacros': ['macro', 'value', 'description', 'type']
+        'selectMacros': ['hostmacroid', 'macro', 'value', 'description', 'type']
     })
     if len(found) != 1:
         raise RuntimeError(f'Template não encontrado: {template_name}')
@@ -32,7 +49,10 @@ def configure(api, template_name):
     hosts = api.call('host.get', {'templateids': [tid], 'output': ['hostid', 'host']})
     scope = [tid] + [h['hostid'] for h in hosts]
     triggers = api.call('trigger.get', {
-        'hostids': scope, 'output': ['triggerid', 'description', 'status', 'templateid']
+        'hostids': scope,
+        'output': ['triggerid', 'description', 'status', 'templateid', 'expression',
+                   'recovery_mode', 'recovery_expression', 'priority', 'comments', 'opdata'],
+        'expandExpression': True, 'selectTags': 'extend'
     })
     items = api.call('item.get', {
         'hostids': [tid], 'filter': {'key_': KEY}, 'output': 'extend'
@@ -44,10 +64,16 @@ def configure(api, template_name):
         json.dump({'template': template, 'hosts': hosts, 'triggers': triggers,
                    'items': items}, stream, ensure_ascii=False, indent=2)
 
-    macros = [m for m in template['macros'] if m['macro'] not in MACROS]
-    macros += [{'macro': name, 'value': value, 'description': description}
-               for name, (value, description) in MACROS.items()]
-    api.call('template.update', {'templateid': tid, 'macros': macros})
+    # Atualize somente as macros desta verificação, preservando inclusive
+    # macros secretas que a API não devolve em texto claro.
+    for name, (value, description) in MACROS.items():
+        existing = next((m for m in template['macros'] if m['macro'] == name), None)
+        if existing:
+            api.call('usermacro.update', {'hostmacroid': existing['hostmacroid'],
+                                         'value': value, 'description': description})
+        else:
+            api.call('usermacro.create', {'hostid': tid, 'macro': name,
+                                         'value': value, 'description': description})
     maps = api.call('valuemap.get', {
         'hostids': [tid], 'filter': {'name': 'GEST - Conexão agente TCP'}, 'output': ['valuemapid']
     })
@@ -60,7 +86,7 @@ def configure(api, template_name):
         'name': 'Zabbix agent: conexão TCP rápida', 'key_': KEY, 'type': 3,
         'value_type': 3, 'delay': '{$GEST.AGENT.CHECK.INTERVAL}',
         'history': '7d', 'trends': '90d', 'valuemapid': mapid, 'status': 0,
-        'description': 'Servidor/proxy verifica a porta TCP do agente, independentemente da espera do poller de agentes indisponíveis. Confirma conectividade TCP, não a execução das métricas. Cinco falhas consecutivas abrem alerta; uma resposta positiva recupera.',
+        'description': ITEM_DESCRIPTION,
         'tags': [{'tag': 'component', 'value': 'zabbix-agent'},
                  {'tag': 'scope', 'value': 'availability'}]
     }
@@ -70,11 +96,14 @@ def configure(api, template_name):
     else:
         itemid = api.call('item.create', dict(data, hostid=tid))['itemids'][0]
     own = next((t for t in triggers if t['description'] == NAME and t['templateid'] == '0'), None)
+    problem_expression, recovery_expression = connection_expressions(template_name)
     data = {
         'description': NAME,
-        'expression': f'count(/{template_name}/{KEY},#5,"eq",0)=5',
+        'expression': problem_expression,
+        'recovery_mode': 1,
+        'recovery_expression': recovery_expression,
         'priority': 3, 'status': 0,
-        'comments': 'Cinco falhas TCP consecutivas, com coleta padrão a cada 5 segundos. Objetivo de detecção da perda de conexão em aproximadamente 30–40 segundos, incluindo timeout e processamento. Recupera na primeira conexão bem-sucedida. Latência de entrega do mensageiro não é garantida.',
+        'comments': TRIGGER_DESCRIPTION,
         'opdata': 'Conexão TCP: {ITEM.LASTVALUE1}',
         'tags': [{'tag': 'component', 'value': 'zabbix-agent'},
                  {'tag': 'scope', 'value': 'availability'}]

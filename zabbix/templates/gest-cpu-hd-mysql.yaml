@@ -23,7 +23,7 @@ zabbix_export:
           delay: '{$GEST.AGENT.CHECK.INTERVAL}'
           history: 7d
           trends: 90d
-          description: 'Servidor/proxy verifica a porta TCP do agente, independentemente da espera do poller de agentes indisponíveis. Confirma conectividade TCP, não a execução das métricas. Cinco falhas consecutivas abrem alerta; uma resposta positiva recupera.'
+          description: 'Servidor/proxy verifica a porta TCP do agente, independentemente da espera do poller de agentes indisponíveis. Confirma conectividade TCP, não a execução das métricas. Abre alerta após 1 minuto de falhas observadas e recupera após 30 segundos de respostas positivas estáveis.'
           valuemap:
             name: 'GEST - Conexão agente TCP'
           tags:
@@ -33,11 +33,13 @@ zabbix_export:
               value: availability
           triggers:
             - uuid: e2a8d3778b0445778a7f56f9182d539e
-              expression: 'count(/GEST-cpu-hd-mysql/net.tcp.service[tcp,,{$GEST.AGENT.PORT}],#5,"eq",0)=5'
+              expression: 'max(/GEST-cpu-hd-mysql/net.tcp.service[tcp,,{$GEST.AGENT.PORT}],1m)=0 and last(/GEST-cpu-hd-mysql/net.tcp.service[tcp,,{$GEST.AGENT.PORT}],#1:now-1m)=0'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'min(/GEST-cpu-hd-mysql/net.tcp.service[tcp,,{$GEST.AGENT.PORT}],30s)=1 and last(/GEST-cpu-hd-mysql/net.tcp.service[tcp,,{$GEST.AGENT.PORT}],#1:now-30s)=1'
               name: '{HOST.NAME}: conexão com o agente Zabbix indisponível'
               opdata: 'Conexão TCP: {ITEM.LASTVALUE1}'
               priority: AVERAGE
-              description: 'Cinco falhas TCP consecutivas, com coleta padrão a cada 5 segundos. Objetivo de detecção da perda de conexão em aproximadamente 30–40 segundos, incluindo timeout e processamento. Recupera na primeira conexão bem-sucedida. Latência de entrega do mensageiro não é garantida.'
+              description: 'Confirma falha TCP por 1 minuto e recuperação por 30 segundos, com coleta padrão a cada 5 segundos. O valor no início de cada janela também é conferido para não confirmar estabilidade com uma única amostra após intervalo sem coleta. Timeout, processamento e entrega do mensageiro podem acrescentar atraso.'
               tags:
                 - tag: component
                   value: zabbix-agent
@@ -113,7 +115,7 @@ zabbix_export:
       macros:
         - macro: '{$GEST.AGENT.CHECK.INTERVAL}'
           value: 5s
-          description: 'Intervalo da checagem TCP rápida. Alerta após cinco falhas consecutivas.'
+          description: 'Intervalo da checagem TCP. Confirma falha por 1 minuto e recuperação por 30 segundos.'
         - macro: '{$GEST.AGENT.PORT}'
           value: '10050'
           description: 'Porta TCP do agente, consultada pelo servidor/proxy.'

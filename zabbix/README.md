@@ -259,21 +259,39 @@ do Zabbix para clientes atrás do mesmo NAT, o procedimento de recuperação e o
 testes de acesso aos agentes. A configuração é administrativa e fica na VM;
 não é aplicada pelo instalador do aplicativo nem pelos templates.
 
-## Detecção rápida da perda de conexão com o agente
+## Confirmação de falha e recuperação da conexão com o agente
 
-Os templates **GEST-cpu-hd-mysql** e **GEST-cpu-hd-nginx-php** acrescentam uma
+Os templates **GEST-cpu-hd-mysql** e **GEST-cpu-hd-nginx-php** acrescentam a
 verificação simples `net.tcp.service[tcp,,{$GEST.AGENT.PORT}]`, executada pelo
-servidor/proxy. Ela consulta a porta do agente a cada **5 segundos** e abre o
-alerta de conexão após **cinco falhas consecutivas**. Uma conexão positiva
-resolve o alerta. O objetivo é detectar a perda de conexão em aproximadamente
-30–40 segundos, incluindo timeout e processamento; a entrega do mensageiro
-também depende do serviço externo e da fila de envio.
+servidor/proxy a cada **5 segundos**.
 
-No teste controlado de 17/11/2026, a perda da VPN abriu o evento em **24
-segundos no servidor web** e **27 segundos no banco**. Os dois eventos foram
-resolvidos após a reconexão; o log confirmou os envios de problema e recuperação
-nos três canais configurados. A evidência com horários e IDs fica no backup
-privado `vpn-fast-notification-test-*.json`, fora do projeto.
+Em **19/11/2026**, o alerta foi ajustado para reduzir notificações durante
+oscilações da VPN:
+
+| Condição | Confirmação exigida |
+| --- | --- |
+| Abrir o problema de conexão | **1 minuto** de falhas observadas, sem resposta positiva na janela |
+| Encerrar o problema | **30 segundos** de respostas positivas estáveis, sem falha na janela |
+
+As expressões usam `max(...,1m)=0` para falha e `min(...,30s)=1` para recuperação,
+com conferência adicional do último valor anterior ao início de cada janela
+(`last(...,#1:now-1m)` e `last(...,#1:now-30s)`). Isso evita confirmar uma janela
+completa a partir de uma única amostra após um intervalo sem coleta. A primeira
+resposta positiva já deixa a condição de problema falsa, mas o evento continua
+aberto até a confirmação da recuperação. Uma nova falha reinicia a espera por
+estabilidade.
+
+O tempo é contado pelos horários das amostras recebidas, não pela quantidade de
+checagens. A próxima coleta, os timeouts, o processamento e a fila do mensageiro
+podem acrescentar atraso; esses tempos não são garantia de entrega da mensagem.
+Sem novas amostras, esta regra não substitui uma verificação própria de ausência
+de dados.
+
+Antes desse ajuste, o alerta abria após cinco falhas e encerrava na primeira
+resposta positiva. O teste de 17/11/2026 confirmou a regra anterior em 24 segundos
+no servidor web e 27 segundos no banco; esses resultados não validam os tempos
+atuais. A evidência histórica permanece no backup privado
+`vpn-fast-notification-test-*.json`, fora do projeto.
 
 Essa checagem confirma que a porta TCP aceita conexão. Não comprova a execução
 das métricas ou o funcionamento de Nginx, PHP e MySQL, que têm verificações
@@ -285,7 +303,7 @@ O template Linux oficial e os demais hosts não são alterados.
 | Macro | Padrão | Uso |
 | --- | --- | --- |
 | `{$GEST.AGENT.PORT}` | `10050` | Porta TCP do agente |
-| `{$GEST.AGENT.CHECK.INTERVAL}` | `5s` | Frequência das checagens; a quantidade de falhas é cinco |
+| `{$GEST.AGENT.CHECK.INTERVAL}` | `5s` | Frequência das checagens; não define sozinha o tempo de confirmação |
 
 Após importar os templates, aplique também o estado do alerta herdado, omitido
 pelo exportador nativo 6.4:
@@ -294,10 +312,14 @@ pelo exportador nativo 6.4:
 python3 zabbix/configurar_alerta_agente_rapido.py
 ```
 
-Use `--template NOME` para restringir a aplicação a um template. O configurador
-é administrativo e usa a conexão salva do aplicativo; faz backup com permissão
-600 fora do projeto antes de alterar a configuração. Os alertas de CPU, disco,
-serviços, HTTPS e ICMP mantêm suas regras próprias.
+O nome do arquivo foi preservado para manter os comandos existentes. Use
+`--template NOME` para restringir a aplicação a um template. O configurador é
+administrativo e usa a conexão salva do aplicativo; faz backup com permissão
+600 fora do projeto antes de alterar a configuração. Os backups incluem as
+expressões de problema e recuperação. Somente as macros desta verificação são
+atualizadas; as demais, inclusive secretas, são preservadas. Os alertas de CPU,
+disco, serviços, HTTPS e ICMP mantêm suas regras próprias.
 
-Referências: [verificações simples](https://www.zabbix.com/documentation/6.4/en/manual/config/items/itemtypes/simple_checks)
-e [tempos do mecanismo padrão de disponibilidade](https://www.zabbix.com/documentation/6.4/en/manual/appendix/items/unreachability).
+Referências: [verificações simples](https://www.zabbix.com/documentation/6.4/en/manual/config/items/itemtypes/simple_checks),
+[funções de histórico](https://www.zabbix.com/documentation/6.4/en/manual/appendix/functions/history)
+e [condição adicional de recuperação](https://www.zabbix.com/documentation/6.4/en/manual/config/triggers/expression).
