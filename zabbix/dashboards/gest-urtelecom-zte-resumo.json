@@ -1,0 +1,1421 @@
+{
+  "dashboardid": "1",
+  "page": {
+    "dashboard_pageid": "7823",
+    "name": "UrTelecom · OLT ZTE Titan",
+    "display_period": "0",
+    "widgets": [
+      {
+        "widgetid": "23626",
+        "type": "item",
+        "name": "Conexão · SNMP",
+        "x": "0",
+        "y": "0",
+        "width": "6",
+        "height": "2",
+        "view_mode": "0",
+        "fields": [
+          {
+            "type": "4",
+            "name": "itemid",
+            "value": "111840"
+          },
+          {
+            "type": "0",
+            "name": "rf_rate",
+            "value": "10"
+          },
+          {
+            "type": "0",
+            "name": "adv_conf",
+            "value": "1"
+          },
+          {
+            "type": "0",
+            "name": "show",
+            "value": "1"
+          },
+          {
+            "type": "0",
+            "name": "show",
+            "value": "2"
+          },
+          {
+            "type": "0",
+            "name": "show",
+            "value": "3"
+          },
+          {
+            "type": "1",
+            "name": "description",
+            "value": "UrTelecom · ZXA10 C620"
+          },
+          {
+            "type": "0",
+            "name": "decimal_places",
+            "value": "0"
+          },
+          {
+            "type": "0",
+            "name": "desc_size",
+            "value": "11"
+          },
+          {
+            "type": "0",
+            "name": "value_size",
+            "value": "34"
+          },
+          {
+            "type": "0",
+            "name": "decimal_size",
+            "value": "27"
+          },
+          {
+            "type": "0",
+            "name": "units_size",
+            "value": "24"
+          },
+          {
+            "type": "0",
+            "name": "time_size",
+            "value": "9"
+          },
+          {
+            "type": "1",
+            "name": "desc_color",
+            "value": "ABC0D2"
+          },
+          {
+            "type": "1",
+            "name": "value_color",
+            "value": "F1F5F9"
+          },
+          {
+            "type": "1",
+            "name": "units_color",
+            "value": "F1F5F9"
+          },
+          {
+            "type": "1",
+            "name": "time_color",
+            "value": "ABC0D2"
+          },
+          {
+            "type": "1",
+            "name": "bg_color",
+            "value": "732C3A"
+          },
+          {
+            "type": "1",
+            "name": "thresholds.threshold.0",
+            "value": "1"
+          },
+          {
+            "type": "1",
+            "name": "thresholds.color.0",
+            "value": "163E36"
+          },
+          {
+            "type": "1",
+            "name": "thresholds.threshold.1",
+            "value": "2"
+          },
+          {
+            "type": "1",
+            "name": "thresholds.color.1",
+            "value": "49371D"
+          }
+        ]
+      },
+      {
+        "widgetid": "23627",
+        "type": "item",
+        "name": "Processamento · CPU",
+        "x": "6",
+        "y": "0",
+        "width": "6",
+        "height": "2",
+        "view_mode": "0",
+        "fields": [
+          {
+            "type": "4",
+            "name": "itemid",
+            "value": "111838"
+          },
+          {
+            "type": "0",
+            "name": "rf_rate",
+            "value": "10"
+          },
+          {
+            "type": "0",
+            "name": "adv_conf",
+            "value": "1"
+          },
+          {
+            "type": "0",
+            "name": "show",
+            "value": "1"
+          },
+          {
+            "type": "0",
+            "name": "show",
+            "value": "2"
+          },
+          {
+            "type": "0",
+            "name": "show",
+            "value": "3"
+          },
+          {
+            "type": "1",
+            "name": "description",
+            "value": "Utilização geral"
+          },
+          {
+            "type": "0",
+            "name": "decimal_places",
+            "value": "1"
+          },
+          {
+            "type": "0",
+            "name": "desc_size",
+            "value": "11"
+          },
+          {
+            "type": "0",
+            "name": "value_size",
+            "value": "56"
+          },
+          {
+            "type": "0",
+            "name": "decimal_size",
+            "value": "27"
+          },
+          {
+            "type": "0",
+            "name": "units_size",
+            "value": "24"
+          },
+          {
+            "type": "0",
+            "name": "time_size",
+            "value": "9"
+          },
+          {
+            "type": "1",
+            "name": "desc_color",
+            "value": "ABC0D2"
+          },
+          {
+            "type": "1",
+            "name": "value_color",
+            "value": "F1F5F9"
+          },
+          {
+            "type": "1",
+            "name": "units_color",
+            "value": "F1F5F9"
+          },
+          {
+            "type": "1",
+            "name": "time_color",
+            "value": "ABC0D2"
+          },
+          {
+            "type": "1",
+            "name": "bg_color",
+            "value": "162E43"
+          },
+          {
+            "type": "1",
+            "name": "thresholds.threshold.0",
+            "value": "70"
+          },
+          {
+            "type": "1",
+            "name": "thresholds.color.0",
+            "value": "49371D"
+          },
+          {
+            "type": "1",
+            "name": "thresholds.threshold.1",
+            "value": "90"
+          },
+          {
+            "type": "1",
+            "name": "thresholds.color.1",
+            "value": "732C3A"
+          }
+        ]
+      },
+      {
+        "widgetid": "23628",
+        "type": "item",
+        "name": "Recursos · memória",
+        "x": "12",
+        "y": "0",
+        "width": "6",
+        "height": "2",
+        "view_mode": "0",
+        "fields": [
+          {
+            "type": "4",
+            "name": "itemid",
+            "value": "111839"
+          },
+          {
+            "type": "0",
+            "name": "rf_rate",
+            "value": "10"
+          },
+          {
+            "type": "0",
+            "name": "adv_conf",
+            "value": "1"
+          },
+          {
+            "type": "0",
+            "name": "show",
+            "value": "1"
+          },
+          {
+            "type": "0",
+            "name": "show",
+            "value": "2"
+          },
+          {
+            "type": "0",
+            "name": "show",
+            "value": "3"
+          },
+          {
+            "type": "1",
+            "name": "description",
+            "value": "Memória utilizada"
+          },
+          {
+            "type": "0",
+            "name": "decimal_places",
+            "value": "1"
+          },
+          {
+            "type": "0",
+            "name": "desc_size",
+            "value": "11"
+          },
+          {
+            "type": "0",
+            "name": "value_size",
+            "value": "56"
+          },
+          {
+            "type": "0",
+            "name": "decimal_size",
+            "value": "27"
+          },
+          {
+            "type": "0",
+            "name": "units_size",
+            "value": "24"
+          },
+          {
+            "type": "0",
+            "name": "time_size",
+            "value": "9"
+          },
+          {
+            "type": "1",
+            "name": "desc_color",
+            "value": "ABC0D2"
+          },
+          {
+            "type": "1",
+            "name": "value_color",
+            "value": "F1F5F9"
+          },
+          {
+            "type": "1",
+            "name": "units_color",
+            "value": "F1F5F9"
+          },
+          {
+            "type": "1",
+            "name": "time_color",
+            "value": "ABC0D2"
+          },
+          {
+            "type": "1",
+            "name": "bg_color",
+            "value": "2E2549"
+          },
+          {
+            "type": "1",
+            "name": "thresholds.threshold.0",
+            "value": "80"
+          },
+          {
+            "type": "1",
+            "name": "thresholds.color.0",
+            "value": "49371D"
+          },
+          {
+            "type": "1",
+            "name": "thresholds.threshold.1",
+            "value": "90"
+          },
+          {
+            "type": "1",
+            "name": "thresholds.color.1",
+            "value": "732C3A"
+          }
+        ]
+      },
+      {
+        "widgetid": "23629",
+        "type": "item",
+        "name": "Operação · uptime",
+        "x": "18",
+        "y": "0",
+        "width": "6",
+        "height": "2",
+        "view_mode": "0",
+        "fields": [
+          {
+            "type": "4",
+            "name": "itemid",
+            "value": "111837"
+          },
+          {
+            "type": "0",
+            "name": "rf_rate",
+            "value": "10"
+          },
+          {
+            "type": "0",
+            "name": "adv_conf",
+            "value": "1"
+          },
+          {
+            "type": "0",
+            "name": "show",
+            "value": "1"
+          },
+          {
+            "type": "0",
+            "name": "show",
+            "value": "2"
+          },
+          {
+            "type": "0",
+            "name": "show",
+            "value": "3"
+          },
+          {
+            "type": "1",
+            "name": "description",
+            "value": "Tempo desde a inicialização"
+          },
+          {
+            "type": "0",
+            "name": "decimal_places",
+            "value": "0"
+          },
+          {
+            "type": "0",
+            "name": "desc_size",
+            "value": "11"
+          },
+          {
+            "type": "0",
+            "name": "value_size",
+            "value": "34"
+          },
+          {
+            "type": "0",
+            "name": "decimal_size",
+            "value": "27"
+          },
+          {
+            "type": "0",
+            "name": "units_size",
+            "value": "24"
+          },
+          {
+            "type": "0",
+            "name": "time_size",
+            "value": "9"
+          },
+          {
+            "type": "1",
+            "name": "desc_color",
+            "value": "ABC0D2"
+          },
+          {
+            "type": "1",
+            "name": "value_color",
+            "value": "F1F5F9"
+          },
+          {
+            "type": "1",
+            "name": "units_color",
+            "value": "F1F5F9"
+          },
+          {
+            "type": "1",
+            "name": "time_color",
+            "value": "ABC0D2"
+          },
+          {
+            "type": "1",
+            "name": "bg_color",
+            "value": "1B2B3A"
+          }
+        ]
+      },
+      {
+        "widgetid": "23630",
+        "type": "item",
+        "name": "ONUs · autorizadas",
+        "x": "0",
+        "y": "2",
+        "width": "6",
+        "height": "2",
+        "view_mode": "0",
+        "fields": [
+          {
+            "type": "4",
+            "name": "itemid",
+            "value": "113717"
+          },
+          {
+            "type": "0",
+            "name": "rf_rate",
+            "value": "10"
+          },
+          {
+            "type": "0",
+            "name": "adv_conf",
+            "value": "1"
+          },
+          {
+            "type": "0",
+            "name": "show",
+            "value": "1"
+          },
+          {
+            "type": "0",
+            "name": "show",
+            "value": "2"
+          },
+          {
+            "type": "0",
+            "name": "show",
+            "value": "3"
+          },
+          {
+            "type": "1",
+            "name": "description",
+            "value": "Total cadastrado nas portas GPON"
+          },
+          {
+            "type": "0",
+            "name": "decimal_places",
+            "value": "0"
+          },
+          {
+            "type": "0",
+            "name": "desc_size",
+            "value": "11"
+          },
+          {
+            "type": "0",
+            "name": "value_size",
+            "value": "56"
+          },
+          {
+            "type": "0",
+            "name": "decimal_size",
+            "value": "27"
+          },
+          {
+            "type": "0",
+            "name": "units_size",
+            "value": "24"
+          },
+          {
+            "type": "0",
+            "name": "time_size",
+            "value": "9"
+          },
+          {
+            "type": "1",
+            "name": "desc_color",
+            "value": "ABC0D2"
+          },
+          {
+            "type": "1",
+            "name": "value_color",
+            "value": "F1F5F9"
+          },
+          {
+            "type": "1",
+            "name": "units_color",
+            "value": "F1F5F9"
+          },
+          {
+            "type": "1",
+            "name": "time_color",
+            "value": "ABC0D2"
+          },
+          {
+            "type": "1",
+            "name": "bg_color",
+            "value": "162E43"
+          }
+        ]
+      },
+      {
+        "widgetid": "23631",
+        "type": "item",
+        "name": "ONUs · online",
+        "x": "6",
+        "y": "2",
+        "width": "6",
+        "height": "2",
+        "view_mode": "0",
+        "fields": [
+          {
+            "type": "4",
+            "name": "itemid",
+            "value": "113719"
+          },
+          {
+            "type": "0",
+            "name": "rf_rate",
+            "value": "10"
+          },
+          {
+            "type": "0",
+            "name": "adv_conf",
+            "value": "1"
+          },
+          {
+            "type": "0",
+            "name": "show",
+            "value": "1"
+          },
+          {
+            "type": "0",
+            "name": "show",
+            "value": "2"
+          },
+          {
+            "type": "0",
+            "name": "show",
+            "value": "3"
+          },
+          {
+            "type": "1",
+            "name": "description",
+            "value": "Conectadas neste momento"
+          },
+          {
+            "type": "0",
+            "name": "decimal_places",
+            "value": "0"
+          },
+          {
+            "type": "0",
+            "name": "desc_size",
+            "value": "11"
+          },
+          {
+            "type": "0",
+            "name": "value_size",
+            "value": "56"
+          },
+          {
+            "type": "0",
+            "name": "decimal_size",
+            "value": "27"
+          },
+          {
+            "type": "0",
+            "name": "units_size",
+            "value": "24"
+          },
+          {
+            "type": "0",
+            "name": "time_size",
+            "value": "9"
+          },
+          {
+            "type": "1",
+            "name": "desc_color",
+            "value": "ABC0D2"
+          },
+          {
+            "type": "1",
+            "name": "value_color",
+            "value": "F1F5F9"
+          },
+          {
+            "type": "1",
+            "name": "units_color",
+            "value": "F1F5F9"
+          },
+          {
+            "type": "1",
+            "name": "time_color",
+            "value": "ABC0D2"
+          },
+          {
+            "type": "1",
+            "name": "bg_color",
+            "value": "163E36"
+          }
+        ]
+      },
+      {
+        "widgetid": "23632",
+        "type": "item",
+        "name": "ONUs · não online",
+        "x": "12",
+        "y": "2",
+        "width": "6",
+        "height": "2",
+        "view_mode": "0",
+        "fields": [
+          {
+            "type": "4",
+            "name": "itemid",
+            "value": "113723"
+          },
+          {
+            "type": "0",
+            "name": "rf_rate",
+            "value": "10"
+          },
+          {
+            "type": "0",
+            "name": "adv_conf",
+            "value": "1"
+          },
+          {
+            "type": "0",
+            "name": "show",
+            "value": "1"
+          },
+          {
+            "type": "0",
+            "name": "show",
+            "value": "2"
+          },
+          {
+            "type": "0",
+            "name": "show",
+            "value": "3"
+          },
+          {
+            "type": "1",
+            "name": "description",
+            "value": "Todos os estados diferentes de online"
+          },
+          {
+            "type": "0",
+            "name": "decimal_places",
+            "value": "0"
+          },
+          {
+            "type": "0",
+            "name": "desc_size",
+            "value": "11"
+          },
+          {
+            "type": "0",
+            "name": "value_size",
+            "value": "56"
+          },
+          {
+            "type": "0",
+            "name": "decimal_size",
+            "value": "27"
+          },
+          {
+            "type": "0",
+            "name": "units_size",
+            "value": "24"
+          },
+          {
+            "type": "0",
+            "name": "time_size",
+            "value": "9"
+          },
+          {
+            "type": "1",
+            "name": "desc_color",
+            "value": "ABC0D2"
+          },
+          {
+            "type": "1",
+            "name": "value_color",
+            "value": "F1F5F9"
+          },
+          {
+            "type": "1",
+            "name": "units_color",
+            "value": "F1F5F9"
+          },
+          {
+            "type": "1",
+            "name": "time_color",
+            "value": "ABC0D2"
+          },
+          {
+            "type": "1",
+            "name": "bg_color",
+            "value": "49371D"
+          }
+        ]
+      },
+      {
+        "widgetid": "23633",
+        "type": "item",
+        "name": "ONUs · conectadas / autorizadas",
+        "x": "18",
+        "y": "2",
+        "width": "6",
+        "height": "2",
+        "view_mode": "0",
+        "fields": [
+          {
+            "type": "4",
+            "name": "itemid",
+            "value": "113725"
+          },
+          {
+            "type": "0",
+            "name": "rf_rate",
+            "value": "10"
+          },
+          {
+            "type": "0",
+            "name": "adv_conf",
+            "value": "1"
+          },
+          {
+            "type": "0",
+            "name": "show",
+            "value": "1"
+          },
+          {
+            "type": "0",
+            "name": "show",
+            "value": "2"
+          },
+          {
+            "type": "0",
+            "name": "show",
+            "value": "3"
+          },
+          {
+            "type": "1",
+            "name": "description",
+            "value": "Percentual de ONUs online"
+          },
+          {
+            "type": "0",
+            "name": "decimal_places",
+            "value": "1"
+          },
+          {
+            "type": "0",
+            "name": "desc_size",
+            "value": "11"
+          },
+          {
+            "type": "0",
+            "name": "value_size",
+            "value": "56"
+          },
+          {
+            "type": "0",
+            "name": "decimal_size",
+            "value": "27"
+          },
+          {
+            "type": "0",
+            "name": "units_size",
+            "value": "24"
+          },
+          {
+            "type": "0",
+            "name": "time_size",
+            "value": "9"
+          },
+          {
+            "type": "1",
+            "name": "desc_color",
+            "value": "ABC0D2"
+          },
+          {
+            "type": "1",
+            "name": "value_color",
+            "value": "F1F5F9"
+          },
+          {
+            "type": "1",
+            "name": "units_color",
+            "value": "F1F5F9"
+          },
+          {
+            "type": "1",
+            "name": "time_color",
+            "value": "ABC0D2"
+          },
+          {
+            "type": "1",
+            "name": "bg_color",
+            "value": "2E2549"
+          }
+        ]
+      },
+      {
+        "widgetid": "23634",
+        "type": "svggraph",
+        "name": "GPON · evolução das ONUs",
+        "x": "0",
+        "y": "4",
+        "width": "12",
+        "height": "4",
+        "view_mode": "0",
+        "fields": [
+          {
+            "type": "0",
+            "name": "rf_rate",
+            "value": "30"
+          },
+          {
+            "type": "0",
+            "name": "righty",
+            "value": "0"
+          },
+          {
+            "type": "1",
+            "name": "lefty_min",
+            "value": "0"
+          },
+          {
+            "type": "0",
+            "name": "legend",
+            "value": "1"
+          },
+          {
+            "type": "0",
+            "name": "legend_lines",
+            "value": "3"
+          },
+          {
+            "type": "0",
+            "name": "legend_columns",
+            "value": "1"
+          },
+          {
+            "type": "0",
+            "name": "show_problems",
+            "value": "1"
+          },
+          {
+            "type": "0",
+            "name": "graph_item_problems",
+            "value": "0"
+          },
+          {
+            "type": "1",
+            "name": "problemhosts.0",
+            "value": "UrTelecom OLT ZTE Titan"
+          },
+          {
+            "type": "1",
+            "name": "ds.hosts.0.0",
+            "value": "UrTelecom OLT ZTE Titan"
+          },
+          {
+            "type": "1",
+            "name": "ds.items.0.0",
+            "value": "GPON: total de ONUs autorizadas"
+          },
+          {
+            "type": "1",
+            "name": "ds.color.0",
+            "value": "94A3B8"
+          },
+          {
+            "type": "0",
+            "name": "ds.width.0",
+            "value": "2"
+          },
+          {
+            "type": "0",
+            "name": "ds.fill.0",
+            "value": "2"
+          },
+          {
+            "type": "0",
+            "name": "ds.transparency.0",
+            "value": "2"
+          },
+          {
+            "type": "0",
+            "name": "ds.missingdatafunc.0",
+            "value": "0"
+          },
+          {
+            "type": "1",
+            "name": "ds.hosts.1.0",
+            "value": "UrTelecom OLT ZTE Titan"
+          },
+          {
+            "type": "1",
+            "name": "ds.items.1.0",
+            "value": "GPON: total de ONUs online"
+          },
+          {
+            "type": "1",
+            "name": "ds.color.1",
+            "value": "34D399"
+          },
+          {
+            "type": "0",
+            "name": "ds.width.1",
+            "value": "2"
+          },
+          {
+            "type": "0",
+            "name": "ds.fill.1",
+            "value": "2"
+          },
+          {
+            "type": "0",
+            "name": "ds.transparency.1",
+            "value": "2"
+          },
+          {
+            "type": "0",
+            "name": "ds.missingdatafunc.1",
+            "value": "0"
+          },
+          {
+            "type": "1",
+            "name": "ds.hosts.2.0",
+            "value": "UrTelecom OLT ZTE Titan"
+          },
+          {
+            "type": "1",
+            "name": "ds.items.2.0",
+            "value": "GPON: total de ONUs não online"
+          },
+          {
+            "type": "1",
+            "name": "ds.color.2",
+            "value": "FBBF24"
+          },
+          {
+            "type": "0",
+            "name": "ds.width.2",
+            "value": "2"
+          },
+          {
+            "type": "0",
+            "name": "ds.fill.2",
+            "value": "2"
+          },
+          {
+            "type": "0",
+            "name": "ds.transparency.2",
+            "value": "2"
+          },
+          {
+            "type": "0",
+            "name": "ds.missingdatafunc.2",
+            "value": "0"
+          }
+        ]
+      },
+      {
+        "widgetid": "23635",
+        "type": "svggraph",
+        "name": "Recursos · CPU e memória",
+        "x": "12",
+        "y": "4",
+        "width": "12",
+        "height": "4",
+        "view_mode": "0",
+        "fields": [
+          {
+            "type": "0",
+            "name": "rf_rate",
+            "value": "30"
+          },
+          {
+            "type": "0",
+            "name": "righty",
+            "value": "0"
+          },
+          {
+            "type": "1",
+            "name": "lefty_min",
+            "value": "0"
+          },
+          {
+            "type": "0",
+            "name": "legend",
+            "value": "1"
+          },
+          {
+            "type": "0",
+            "name": "legend_lines",
+            "value": "2"
+          },
+          {
+            "type": "0",
+            "name": "legend_columns",
+            "value": "1"
+          },
+          {
+            "type": "0",
+            "name": "show_problems",
+            "value": "1"
+          },
+          {
+            "type": "0",
+            "name": "graph_item_problems",
+            "value": "0"
+          },
+          {
+            "type": "1",
+            "name": "problemhosts.0",
+            "value": "UrTelecom OLT ZTE Titan"
+          },
+          {
+            "type": "1",
+            "name": "lefty_max",
+            "value": "100"
+          },
+          {
+            "type": "1",
+            "name": "ds.hosts.0.0",
+            "value": "UrTelecom OLT ZTE Titan"
+          },
+          {
+            "type": "1",
+            "name": "ds.items.0.0",
+            "value": "Uso de CPU SNMP"
+          },
+          {
+            "type": "1",
+            "name": "ds.color.0",
+            "value": "60A5FA"
+          },
+          {
+            "type": "0",
+            "name": "ds.width.0",
+            "value": "2"
+          },
+          {
+            "type": "0",
+            "name": "ds.fill.0",
+            "value": "2"
+          },
+          {
+            "type": "0",
+            "name": "ds.transparency.0",
+            "value": "2"
+          },
+          {
+            "type": "0",
+            "name": "ds.missingdatafunc.0",
+            "value": "0"
+          },
+          {
+            "type": "1",
+            "name": "ds.hosts.1.0",
+            "value": "UrTelecom OLT ZTE Titan"
+          },
+          {
+            "type": "1",
+            "name": "ds.items.1.0",
+            "value": "Uso de Memoria SNMP"
+          },
+          {
+            "type": "1",
+            "name": "ds.color.1",
+            "value": "C4B5FD"
+          },
+          {
+            "type": "0",
+            "name": "ds.width.1",
+            "value": "2"
+          },
+          {
+            "type": "0",
+            "name": "ds.fill.1",
+            "value": "2"
+          },
+          {
+            "type": "0",
+            "name": "ds.transparency.1",
+            "value": "2"
+          },
+          {
+            "type": "0",
+            "name": "ds.missingdatafunc.1",
+            "value": "0"
+          }
+        ]
+      },
+      {
+        "widgetid": "23636",
+        "type": "item",
+        "name": "Ethernet · soma de entrada",
+        "x": "0",
+        "y": "8",
+        "width": "6",
+        "height": "2",
+        "view_mode": "0",
+        "fields": [
+          {
+            "type": "4",
+            "name": "itemid",
+            "value": "113727"
+          },
+          {
+            "type": "0",
+            "name": "rf_rate",
+            "value": "10"
+          },
+          {
+            "type": "0",
+            "name": "adv_conf",
+            "value": "1"
+          },
+          {
+            "type": "0",
+            "name": "show",
+            "value": "1"
+          },
+          {
+            "type": "0",
+            "name": "show",
+            "value": "2"
+          },
+          {
+            "type": "0",
+            "name": "show",
+            "value": "3"
+          },
+          {
+            "type": "1",
+            "name": "description",
+            "value": "Soma das interfaces Ethernet"
+          },
+          {
+            "type": "0",
+            "name": "decimal_places",
+            "value": "2"
+          },
+          {
+            "type": "0",
+            "name": "desc_size",
+            "value": "11"
+          },
+          {
+            "type": "0",
+            "name": "value_size",
+            "value": "42"
+          },
+          {
+            "type": "0",
+            "name": "decimal_size",
+            "value": "27"
+          },
+          {
+            "type": "0",
+            "name": "units_size",
+            "value": "24"
+          },
+          {
+            "type": "0",
+            "name": "time_size",
+            "value": "9"
+          },
+          {
+            "type": "1",
+            "name": "desc_color",
+            "value": "ABC0D2"
+          },
+          {
+            "type": "1",
+            "name": "value_color",
+            "value": "F1F5F9"
+          },
+          {
+            "type": "1",
+            "name": "units_color",
+            "value": "F1F5F9"
+          },
+          {
+            "type": "1",
+            "name": "time_color",
+            "value": "ABC0D2"
+          },
+          {
+            "type": "1",
+            "name": "bg_color",
+            "value": "163E36"
+          }
+        ]
+      },
+      {
+        "widgetid": "23637",
+        "type": "item",
+        "name": "Ethernet · soma de saída",
+        "x": "6",
+        "y": "8",
+        "width": "6",
+        "height": "2",
+        "view_mode": "0",
+        "fields": [
+          {
+            "type": "4",
+            "name": "itemid",
+            "value": "113729"
+          },
+          {
+            "type": "0",
+            "name": "rf_rate",
+            "value": "10"
+          },
+          {
+            "type": "0",
+            "name": "adv_conf",
+            "value": "1"
+          },
+          {
+            "type": "0",
+            "name": "show",
+            "value": "1"
+          },
+          {
+            "type": "0",
+            "name": "show",
+            "value": "2"
+          },
+          {
+            "type": "0",
+            "name": "show",
+            "value": "3"
+          },
+          {
+            "type": "1",
+            "name": "description",
+            "value": "Soma das interfaces Ethernet"
+          },
+          {
+            "type": "0",
+            "name": "decimal_places",
+            "value": "2"
+          },
+          {
+            "type": "0",
+            "name": "desc_size",
+            "value": "11"
+          },
+          {
+            "type": "0",
+            "name": "value_size",
+            "value": "42"
+          },
+          {
+            "type": "0",
+            "name": "decimal_size",
+            "value": "27"
+          },
+          {
+            "type": "0",
+            "name": "units_size",
+            "value": "24"
+          },
+          {
+            "type": "0",
+            "name": "time_size",
+            "value": "9"
+          },
+          {
+            "type": "1",
+            "name": "desc_color",
+            "value": "ABC0D2"
+          },
+          {
+            "type": "1",
+            "name": "value_color",
+            "value": "F1F5F9"
+          },
+          {
+            "type": "1",
+            "name": "units_color",
+            "value": "F1F5F9"
+          },
+          {
+            "type": "1",
+            "name": "time_color",
+            "value": "ABC0D2"
+          },
+          {
+            "type": "1",
+            "name": "bg_color",
+            "value": "162E43"
+          }
+        ]
+      },
+      {
+        "widgetid": "23638",
+        "type": "problems",
+        "name": "Problemas atuais · somente esta OLT",
+        "x": "12",
+        "y": "8",
+        "width": "12",
+        "height": "2",
+        "view_mode": "0",
+        "fields": [
+          {
+            "type": "3",
+            "name": "hostids",
+            "value": "10647"
+          },
+          {
+            "type": "0",
+            "name": "show",
+            "value": "3"
+          },
+          {
+            "type": "0",
+            "name": "show_lines",
+            "value": "3"
+          },
+          {
+            "type": "0",
+            "name": "show_tags",
+            "value": "0"
+          },
+          {
+            "type": "0",
+            "name": "rf_rate",
+            "value": "10"
+          }
+        ]
+      }
+    ]
+  }
+}

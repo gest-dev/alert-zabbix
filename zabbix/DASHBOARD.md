@@ -1,9 +1,17 @@
 # Dashboard GEST
 
-O dashboard **GEST · Operação e servidores** reúne a operação em oito páginas. A troca
+O dashboard **GEST · Operação e servidores** reúne a operação em nove páginas. A troca
 automática de página fica desligada para manter a visão escolhida na tela.
 Em telas menores, o controle nativo para recolher o menu lateral libera espaço
 para os cartões e tabelas; a configuração foi conferida também nesse modo.
+
+Cada página tem uma faixa azul de **32 pixels** no topo com o seu nome, como **AstroCP01**,
+**Banco AtivBenefícios Prod** ou **UrTelecom · OLT ZTE Titan**. A identificação
+mostra somente o nome e continua visível no **modo de quiosque/tela cheia**,
+mesmo quando as abas e a navegação ficam ocultas. Durante o slideshow, o nome
+acompanha a página exibida.
+
+![AstroCP01 identificado em tela cheia](../docs/screenshots/zabbix-gest-astrocp01-quiosque.png)
 
 | Página | Conteúdo |
 | --- | --- |
@@ -15,6 +23,7 @@ para os cartões e tabelas; a configuração foi conferida também nesse modo.
 | AstroCP02 | CPU, ocupação e espaço livre do disco e memória exclusivamente desse host; gráficos e capacidade do disco; problemas do host |
 | Aplicações | Retorno HTTP do site AtivBenefícios, front e API GestClin; resultado dos cenários HTTPS; problemas das aplicações; histórico do tempo de resposta |
 | Infraestrutura | Informações do sistema Zabbix, disponibilidade SNMP, problemas de rede e capacidade dos servidores Linux |
+| UrTelecom · OLT ZTE Titan | Resumo compacto em uma tela: SNMP, CPU, memória, uptime, ONUs, tráfego Ethernet e problemas da OLT; incluído na sequência do slideshow |
 
 Os indicadores usam os itens existentes dos hosts. O item de espaço livre foi
 adicionado aos templates **GEST-cpu-hd-mysql** e **GEST-cpu-hd-nginx-php**. A disponibilidade MySQL recebeu um
@@ -84,3 +93,42 @@ widgets removidos precisam ser recriados sem reutilizar IDs excluídos.
 
 Referências: [dashboards](https://www.zabbix.com/documentation/6.4/en/manual/web_interface/frontend_sections/dashboards)
 e [API dashboard.update](https://www.zabbix.com/documentation/6.4/en/manual/api/reference/dashboard/update).
+
+## Identificação no quiosque
+
+O [módulo GEST](modules/gest-dashboard-title) do frontend mostra a identificação
+fora da grade de widgets, com altura de **32 px** e texto de **16 px**. Usa o
+nome da página selecionada pelo próprio dashboard, atualizando também nas
+passagens automáticas. Não consulta itens, credenciais ou serviços externos.
+Seu escopo é o dashboard operacional de ID `1`.
+
+O módulo está instalado em `/usr/share/zabbix/modules/gest-dashboard-title` na
+VM do Zabbix e ativado na administração de módulos. Não modifica arquivos nativos
+do frontend. Para reinstalar, copie a pasta de mesmo nome do repositório para
+`/usr/share/zabbix/modules/`, busque novos módulos na tela **Módulos** e habilite
+**GEST · Identificação compacta do dashboard**. Recarregue a página após instalar
+ou atualizar os arquivos.
+
+O [configurador de títulos](configurar_titulos_dashboard.py) migra a versão antiga
+com cartões grandes: exige o módulo ativo, salva um backup privado, remove só
+os cartões `Identificação · ...` e devolve seu espaço aos widgets existentes.
+Reaplicações não deslocam o conteúdo novamente:
+
+```bash
+python3 zabbix/configurar_titulos_dashboard.py --apply
+```
+
+O configurador usa a conexão do aplicativo; conserva os IDs, conteúdos, filtros,
+tamanhos e posições originais dos 67 widgets operacionais, incluindo o log de
+ações. O backup usa `gest-before-page-titles-*.json`; o
+[snapshot das identificações](dashboards/gest-identificacoes.json) registra o
+módulo e as páginas desta instância. O resumo da OLT recebe a faixa automaticamente,
+sem precisar reservar linhas extras. Para ocultar a faixa, desabilite o módulo.
+
+As nove identificações foram verificadas no quiosque em 1920 × 1080. A troca
+automática de AstroCP01 para AstroCP02 foi conferida com o título correspondente.
+O intervalo permanece em 30 segundos; o slideshow foi parado após o teste.
+
+## Dashboard UrTelecom · OLT ZTE Titan
+
+A OLT tem um painel próprio com seis páginas: visão geral, GPON, VLANs, uplinks, hardware/óptica e eventos/notificações. Os detalhes, capturas e instruções de manutenção estão em [ZTE-TITAN.md](ZTE-TITAN.md#dashboard-da-olt).

@@ -1,0 +1,43 @@
+{
+  "dashboardid": "1",
+  "module": "gest_dashboard_title",
+  "height_px": 32,
+  "pages": [
+    {
+      "dashboard_pageid": "1",
+      "name": "Visão geral"
+    },
+    {
+      "dashboard_pageid": "7814",
+      "name": "Servidores"
+    },
+    {
+      "dashboard_pageid": "7817",
+      "name": "AtivBenefícios · Web"
+    },
+    {
+      "dashboard_pageid": "7812",
+      "name": "Banco AtivBenefícios Prod"
+    },
+    {
+      "dashboard_pageid": "7815",
+      "name": "AstroCP01"
+    },
+    {
+      "dashboard_pageid": "7816",
+      "name": "AstroCP02"
+    },
+    {
+      "dashboard_pageid": "7811",
+      "name": "Aplicações"
+    },
+    {
+      "dashboard_pageid": "7813",
+      "name": "Infraestrutura"
+    },
+    {
+      "dashboard_pageid": "7823",
+      "name": "UrTelecom · OLT ZTE Titan"
+    }
+  ]
+}

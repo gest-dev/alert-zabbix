@@ -1,0 +1,13 @@
+{
+  "manifest_version": 2.0,
+  "id": "gest_dashboard_title",
+  "name": "GEST · Identificação compacta do dashboard",
+  "namespace": "GestDashboardTitle",
+  "version": "1.0.0",
+  "author": "GEST",
+  "description": "Faixa de 32 pixels com o nome da página atual, inclusive no quiosque e slideshow.",
+  "assets": {
+    "css": ["title.css"],
+    "js": ["title.js"]
+  }
+}

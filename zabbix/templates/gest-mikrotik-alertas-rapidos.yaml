@@ -1,0 +1,592 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: e601af49d1d7433fb98d565188559f68
+      name: GEST
+  templates:
+    - uuid: 0dd1e0b6739d4dc1ad0fe34f1ba273c0
+      template: 'GEST - MikroTik Alertas Rapidos'
+      name: 'GEST - MikroTik Alertas Rapidos'
+      description: 'Perfil adicional RouterOS: coleta rápida apenas de saúde e portas físicas/VLANs; não acelera contadores individuais PPPoE. Falha ICMP e limites com janela completa de 15s; recuperação ICMP/CPU/RAM/discos/banda por 30s estáveis. SNMP usa nodata de 30s, avaliado periodicamente, e recupera com o retorno das coletas. Queda de banda >=80% por 15s contra 5min anteriores, base >100Mb/s; recuperação por 30s acima de 70% da referência móvel e tráfego positivo. IP público compartilhado significa que ping verifica a borda/NAT, enquanto SNMP usa a porta específica da interface.'
+      groups:
+        - name: GEST
+      items:
+        - uuid: 6f43aa8fb3584280b46113eb956ef0a7
+          name: 'GEST: maior utilização de CPU entre os núcleos'
+          type: DEPENDENT
+          key: gest.mikrotik.cpu.max
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          trends: 90d
+          units: '%'
+          preprocessing:
+            - type: SNMP_WALK_TO_JSON
+              parameters:
+                - '{#LOAD}'
+                - 1.3.6.1.2.1.25.3.3.1.2
+                - '0'
+            - type: JAVASCRIPT
+              parameters:
+                - 'var a=JSON.parse(value); if(!a.length) throw "CPU sem dados"; var m=0; for(var i=0;i<a.length;i++){var n=Number(a[i]["{#LOAD}"]); if(!isFinite(n)) throw "CPU inválida"; m=Math.max(m,n);} return m;'
+          master_item:
+            key: gest.mikrotik.cpu.walk
+          tags:
+            - tag: profile
+              value: GEST-fast
+          triggers:
+            - uuid: 841dbf5925bc4d2b9e756195fcc069fa
+              expression: 'min(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.cpu.max,15s)>{$GEST.FAST.CPU.MAX} and last(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.cpu.max,#1:now-15s)>{$GEST.FAST.CPU.MAX}'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'max(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.cpu.max,30s)<80 and last(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.cpu.max,#1:now-30s)<80'
+              name: '{HOST.NAME}: CPU acima de 90% por 15 segundos em pelo menos um núcleo'
+              priority: HIGH
+              dependencies:
+                - name: '{HOST.NAME}: sem coleta SNMP por pelo menos 30 segundos'
+                  expression: 'nodata(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.uptime,30s)=1'
+                  recovery_expression: 'nodata(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.uptime,30s)=0'
+                - name: '{HOST.NAME}: sem resposta ICMP por 15 segundos'
+                  expression: 'max(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],15s)=0 and last(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],#1:now-15s)=0'
+                  recovery_expression: 'min(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],30s)=1 and last(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],#1:now-30s)=1'
+              tags:
+                - tag: profile
+                  value: GEST-fast
+        - uuid: aa821d08f8bf45a688025b02da284c8f
+          name: 'GEST: coleta de CPU por núcleo'
+          type: SNMP_AGENT
+          snmp_oid: 'walk[1.3.6.1.2.1.25.3.3.1.2]'
+          key: gest.mikrotik.cpu.walk
+          delay: 5s
+          history: '0'
+          value_type: TEXT
+          trends: '0'
+          tags:
+            - tag: profile
+              value: GEST-fast
+        - uuid: 41f16e2b74b0491790a55df691f0f6a2
+          name: 'GEST: coleta de discos'
+          type: SNMP_AGENT
+          snmp_oid: 'walk[1.3.6.1.2.1.25.2.3.1.2,1.3.6.1.2.1.25.2.3.1.3,1.3.6.1.2.1.25.2.3.1.4,1.3.6.1.2.1.25.2.3.1.5,1.3.6.1.2.1.25.2.3.1.6]'
+          key: gest.mikrotik.disk.walk
+          delay: 5s
+          history: '0'
+          value_type: TEXT
+          trends: '0'
+          tags:
+            - tag: profile
+              value: GEST-fast
+        - uuid: 9714a69ad6924c968d7812fdc86cacd1
+          name: 'GEST: utilização de memória'
+          type: CALCULATED
+          key: gest.mikrotik.memory.pused
+          delay: 5s
+          history: 7d
+          value_type: FLOAT
+          trends: 90d
+          units: '%'
+          params: 'last(//gest.mikrotik.memory.used)/last(//gest.mikrotik.memory.total)*100'
+          tags:
+            - tag: profile
+              value: GEST-fast
+          triggers:
+            - uuid: 1e4096e9a5ba4edfab817aaa8a6e68b1
+              expression: 'min(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.memory.pused,15s)>{$GEST.FAST.MEMORY.MAX} and last(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.memory.pused,#1:now-15s)>{$GEST.FAST.MEMORY.MAX}'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'max(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.memory.pused,30s)<85 and last(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.memory.pused,#1:now-30s)<85'
+              name: '{HOST.NAME}: memória acima de 90% por 15 segundos'
+              priority: AVERAGE
+              dependencies:
+                - name: '{HOST.NAME}: sem coleta SNMP por pelo menos 30 segundos'
+                  expression: 'nodata(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.uptime,30s)=1'
+                  recovery_expression: 'nodata(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.uptime,30s)=0'
+                - name: '{HOST.NAME}: sem resposta ICMP por 15 segundos'
+                  expression: 'max(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],15s)=0 and last(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],#1:now-15s)=0'
+                  recovery_expression: 'min(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],30s)=1 and last(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],#1:now-30s)=1'
+              tags:
+                - tag: profile
+                  value: GEST-fast
+        - uuid: 00c510883f294a7692fb8c3c5b4e4ebb
+          name: 'GEST: memória total (unidades SNMP)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.25.2.3.1.5.65536
+          key: gest.mikrotik.memory.total
+          delay: 10s
+          history: 7d
+          trends: 90d
+          tags:
+            - tag: profile
+              value: GEST-fast
+        - uuid: 422412f7a2cd422a8f6e76b85a36ecf2
+          name: 'GEST: memória usada (unidades SNMP)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.25.2.3.1.6.65536
+          key: gest.mikrotik.memory.used
+          delay: 10s
+          history: 7d
+          trends: 90d
+          tags:
+            - tag: profile
+              value: GEST-fast
+        - uuid: 4be677f7e85040e195e2b6cd94df1aec
+          name: 'GEST: heartbeat SNMP'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.1.3.0
+          key: gest.mikrotik.uptime
+          delay: 5s
+          history: 7d
+          trends: 90d
+          units: uptime
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '0.01'
+          tags:
+            - tag: profile
+              value: GEST-fast
+          triggers:
+            - uuid: a18803cfe5484a899a425bdf65d78f64
+              expression: 'nodata(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.uptime,30s)=1'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'nodata(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.uptime,30s)=0'
+              name: '{HOST.NAME}: sem coleta SNMP por pelo menos 30 segundos'
+              priority: AVERAGE
+              description: 'nodata tem mínimo de 30s e avaliação periódica. Porta SNMP específica do host; não confundir com ping do IP público/NAT.'
+              dependencies:
+                - name: '{HOST.NAME}: sem resposta ICMP por 15 segundos'
+                  expression: 'max(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],15s)=0 and last(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],#1:now-15s)=0'
+                  recovery_expression: 'min(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],30s)=1 and last(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],#1:now-30s)=1'
+              tags:
+                - tag: profile
+                  value: GEST-fast
+        - uuid: 1b803e882a454c7f93defb91bec7e59f
+          name: 'GEST: perda ICMP rápida'
+          type: SIMPLE
+          key: 'icmppingloss[,3,200,56,1000]'
+          delay: 5s
+          history: 7d
+          value_type: FLOAT
+          trends: 90d
+          units: '%'
+          tags:
+            - tag: profile
+              value: GEST-fast
+          triggers:
+            - uuid: 35f5237695a74fd88092666f33d5a3e2
+              expression: 'min(/GEST - MikroTik Alertas Rapidos/icmppingloss[,3,200,56,1000],15s)>20 and last(/GEST - MikroTik Alertas Rapidos/icmppingloss[,3,200,56,1000],#1:now-15s)>20 and max(/GEST - MikroTik Alertas Rapidos/icmppingloss[,3,200,56,1000],15s)<100'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'max(/GEST - MikroTik Alertas Rapidos/icmppingloss[,3,200,56,1000],30s)<10 and last(/GEST - MikroTik Alertas Rapidos/icmppingloss[,3,200,56,1000],#1:now-30s)<10'
+              name: '{HOST.NAME}: perda ICMP acima de 20% por 15 segundos'
+              priority: WARNING
+              dependencies:
+                - name: '{HOST.NAME}: sem resposta ICMP por 15 segundos'
+                  expression: 'max(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],15s)=0 and last(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],#1:now-15s)=0'
+                  recovery_expression: 'min(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],30s)=1 and last(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],#1:now-30s)=1'
+              tags:
+                - tag: profile
+                  value: GEST-fast
+        - uuid: 8f7a91974f3945af952cebc3465bdcf7
+          name: 'GEST: latência ICMP rápida'
+          type: SIMPLE
+          key: 'icmppingsec[,3,200,56,1000,avg]'
+          delay: 5s
+          history: 7d
+          value_type: FLOAT
+          trends: 90d
+          units: s
+          tags:
+            - tag: profile
+              value: GEST-fast
+        - uuid: aa312e51151a43a0ac0995075614d8d8
+          name: 'GEST: disponibilidade ICMP rápida'
+          type: SIMPLE
+          key: 'icmpping[,3,200,56,1000]'
+          delay: 5s
+          history: 7d
+          trends: 90d
+          tags:
+            - tag: profile
+              value: GEST-fast
+          triggers:
+            - uuid: 236ada0d01054e0fb45d761106c58acd
+              expression: 'max(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],15s)=0 and last(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],#1:now-15s)=0'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'min(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],30s)=1 and last(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],#1:now-30s)=1'
+              name: '{HOST.NAME}: sem resposta ICMP por 15 segundos'
+              priority: HIGH
+              description: 'Janela completa de 15s com coleta de 5s. Timeout, agendamento e mensageiro podem acrescentar atraso. Em IP com NAT compartilhado, verifica a conectividade da borda.'
+              tags:
+                - tag: profile
+                  value: GEST-fast
+      discovery_rules:
+        - uuid: a8e2517fd6364095ba7b335d787f491e
+          name: 'GEST: descoberta de discos fixos'
+          type: DEPENDENT
+          key: gest.mikrotik.disk.discovery
+          delay: '0'
+          filter:
+            conditions:
+              - macro: '{#TYPE}'
+                value: (\.4$|hrStorageFixedDisk$)
+                formulaid: A
+          lifetime: 7d
+          item_prototypes:
+            - uuid: a6b803bde9674c208006957be70df16f
+              name: 'GEST: disco {#DISK}: ocupação'
+              type: CALCULATED
+              key: 'gest.mikrotik.disk.pused[{#SNMPINDEX}]'
+              delay: 5s
+              history: 7d
+              value_type: FLOAT
+              trends: 90d
+              units: '%'
+              params: 'last(//gest.mikrotik.disk.used[{#SNMPINDEX}])/last(//gest.mikrotik.disk.total[{#SNMPINDEX}])*100'
+              tags:
+                - tag: profile
+                  value: GEST-fast
+              trigger_prototypes:
+                - uuid: d861a44df6a047ca89841b62913e5745
+                  expression: 'min(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.disk.pused[{#SNMPINDEX}],15s)>{$GEST.FAST.DISK.WARN} and last(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.disk.pused[{#SNMPINDEX}],#1:now-15s)>{$GEST.FAST.DISK.WARN}'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'max(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.disk.pused[{#SNMPINDEX}],30s)<75 and last(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.disk.pused[{#SNMPINDEX}],#1:now-30s)<75'
+                  name: '{HOST.NAME}: disco {#DISK} acima de 80% por 15 segundos'
+                  priority: WARNING
+                  dependencies:
+                    - name: '{HOST.NAME}: disco {#DISK} acima de 90% por 15 segundos'
+                      expression: 'min(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.disk.pused[{#SNMPINDEX}],15s)>{$GEST.FAST.DISK.HIGH} and last(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.disk.pused[{#SNMPINDEX}],#1:now-15s)>{$GEST.FAST.DISK.HIGH}'
+                      recovery_expression: 'max(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.disk.pused[{#SNMPINDEX}],30s)<85 and last(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.disk.pused[{#SNMPINDEX}],#1:now-30s)<85'
+                    - name: '{HOST.NAME}: sem coleta SNMP por pelo menos 30 segundos'
+                      expression: 'nodata(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.uptime,30s)=1'
+                      recovery_expression: 'nodata(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.uptime,30s)=0'
+                    - name: '{HOST.NAME}: sem resposta ICMP por 15 segundos'
+                      expression: 'max(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],15s)=0 and last(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],#1:now-15s)=0'
+                      recovery_expression: 'min(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],30s)=1 and last(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],#1:now-30s)=1'
+                  tags:
+                    - tag: profile
+                      value: GEST-fast
+                - uuid: 62fdc20e642f42478a1bd50920457210
+                  expression: 'min(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.disk.pused[{#SNMPINDEX}],15s)>{$GEST.FAST.DISK.HIGH} and last(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.disk.pused[{#SNMPINDEX}],#1:now-15s)>{$GEST.FAST.DISK.HIGH}'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'max(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.disk.pused[{#SNMPINDEX}],30s)<85 and last(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.disk.pused[{#SNMPINDEX}],#1:now-30s)<85'
+                  name: '{HOST.NAME}: disco {#DISK} acima de 90% por 15 segundos'
+                  priority: HIGH
+                  dependencies:
+                    - name: '{HOST.NAME}: sem coleta SNMP por pelo menos 30 segundos'
+                      expression: 'nodata(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.uptime,30s)=1'
+                      recovery_expression: 'nodata(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.uptime,30s)=0'
+                    - name: '{HOST.NAME}: sem resposta ICMP por 15 segundos'
+                      expression: 'max(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],15s)=0 and last(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],#1:now-15s)=0'
+                      recovery_expression: 'min(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],30s)=1 and last(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],#1:now-30s)=1'
+                  tags:
+                    - tag: profile
+                      value: GEST-fast
+            - uuid: a5c88d4304df42daad2d2b705b40f46b
+              name: 'GEST: disco {#DISK}: total'
+              type: DEPENDENT
+              key: 'gest.mikrotik.disk.total[{#SNMPINDEX}]'
+              delay: '0'
+              history: 7d
+              trends: 90d
+              units: B
+              preprocessing:
+                - type: SNMP_WALK_VALUE
+                  parameters:
+                    - '1.3.6.1.2.1.25.2.3.1.5.{#SNMPINDEX}'
+                    - '0'
+                - type: MULTIPLIER
+                  parameters:
+                    - '{#ALLOC}'
+              master_item:
+                key: gest.mikrotik.disk.walk
+              tags:
+                - tag: profile
+                  value: GEST-fast
+            - uuid: 8bd23377f49f480ba0310957b10728a9
+              name: 'GEST: disco {#DISK}: used'
+              type: DEPENDENT
+              key: 'gest.mikrotik.disk.used[{#SNMPINDEX}]'
+              delay: '0'
+              history: 7d
+              trends: 90d
+              units: B
+              preprocessing:
+                - type: SNMP_WALK_VALUE
+                  parameters:
+                    - '1.3.6.1.2.1.25.2.3.1.6.{#SNMPINDEX}'
+                    - '0'
+                - type: MULTIPLIER
+                  parameters:
+                    - '{#ALLOC}'
+              master_item:
+                key: gest.mikrotik.disk.walk
+              tags:
+                - tag: profile
+                  value: GEST-fast
+          master_item:
+            key: gest.mikrotik.disk.walk
+          preprocessing:
+            - type: SNMP_WALK_TO_JSON
+              parameters:
+                - '{#TYPE}'
+                - 1.3.6.1.2.1.25.2.3.1.2
+                - '0'
+                - '{#DISK}'
+                - 1.3.6.1.2.1.25.2.3.1.3
+                - '0'
+                - '{#ALLOC}'
+                - 1.3.6.1.2.1.25.2.3.1.4
+                - '0'
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 1h
+        - uuid: 754c7848ac8e415f89ef25a47adc9d8a
+          name: 'GEST: portas físicas e VLANs'
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#IFNAME},1.3.6.1.2.1.31.1.1.1.1,{#IFTYPE},1.3.6.1.2.1.2.2.1.3,{#IFALIAS},1.3.6.1.2.1.31.1.1.1.18]'
+          key: gest.mikrotik.interface.discovery
+          delay: 1h
+          filter:
+            evaltype: AND
+            conditions:
+              - macro: '{#IFNAME}'
+                value: '{$GEST.FAST.IF.NAME.EXCLUDE}'
+                operator: NOT_MATCHES_REGEX
+                formulaid: A
+              - macro: '{#IFTYPE}'
+                value: ^(6|135|136)$
+                formulaid: B
+          lifetime: 7d
+          item_prototypes:
+            - uuid: 693c8de421eb44f8a4b43a0e84d402f9
+              name: 'GEST: interface {#IFNAME}: estado administrativo'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.2.1.2.2.1.7.{#SNMPINDEX}'
+              key: 'gest.mikrotik.if.admin[{#SNMPINDEX}]'
+              delay: 5s
+              history: 7d
+              trends: 90d
+              tags:
+                - tag: profile
+                  value: GEST-fast
+            - uuid: 38946bbdbebf487b99ebe70f25b0cbf6
+              name: 'GEST: interface {#IFNAME}: bits de entrada'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.2.1.31.1.1.1.6.{#SNMPINDEX}'
+              key: 'gest.mikrotik.if.in[{#SNMPINDEX}]'
+              delay: 5s
+              history: 7d
+              trends: 90d
+              units: bps
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+                - type: MULTIPLIER
+                  parameters:
+                    - '8'
+              tags:
+                - tag: profile
+                  value: GEST-fast
+            - uuid: 3831a2fbf6ab47b2827490e1ce2316eb
+              name: 'GEST: interface {#IFNAME}: estado operacional'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.2.1.2.2.1.8.{#SNMPINDEX}'
+              key: 'gest.mikrotik.if.oper[{#SNMPINDEX}]'
+              delay: 5s
+              history: 7d
+              trends: 90d
+              tags:
+                - tag: ifType
+                  value: '{#IFTYPE}'
+                - tag: profile
+                  value: GEST-fast
+            - uuid: aa2b663293a84bf4bd413a8d375f6dda
+              name: 'GEST: interface {#IFNAME}: bits de saída'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.2.1.31.1.1.1.10.{#SNMPINDEX}'
+              key: 'gest.mikrotik.if.out[{#SNMPINDEX}]'
+              delay: 5s
+              history: 7d
+              trends: 90d
+              units: bps
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+                - type: MULTIPLIER
+                  parameters:
+                    - '8'
+              tags:
+                - tag: profile
+                  value: GEST-fast
+          trigger_prototypes:
+            - uuid: dc1425fbac1f4dfba28e057ac1206807
+              expression: 'last(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.admin[{#SNMPINDEX}])=1 and last(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.oper[{#SNMPINDEX}])=1 and count(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.in[{#SNMPINDEX}],5m:now-20s)>=55 and avg(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.in[{#SNMPINDEX}],5m:now-20s)>{$GEST.FAST.TRAFFIC.BASELINE} and max(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.in[{#SNMPINDEX}],15s)<=avg(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.in[{#SNMPINDEX}],5m:now-20s)*{$GEST.FAST.TRAFFIC.DROP} and last(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.in[{#SNMPINDEX}],#1:now-15s)<=avg(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.in[{#SNMPINDEX}],5m:now-20s)*{$GEST.FAST.TRAFFIC.DROP}'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'last(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.admin[{#SNMPINDEX}])<>1 or (min(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.in[{#SNMPINDEX}],30s)>0 and min(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.in[{#SNMPINDEX}],30s)>=avg(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.in[{#SNMPINDEX}],5m:now-20s)*{$GEST.FAST.TRAFFIC.RECOVERY} and last(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.in[{#SNMPINDEX}],#1:now-30s)>=avg(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.in[{#SNMPINDEX}],5m:now-20s)*{$GEST.FAST.TRAFFIC.RECOVERY})'
+              name: '{HOST.NAME}: interface {#IFNAME} ({#IFALIAS}): queda de pelo menos 80% na entrada'
+              priority: WARNING
+              description: 'Anomalia de tráfego, não prova isolada de falha. Janela completa de 15s <=20% da média (queda >=80%) dos 5min encerrados 20s antes; base >100Mb/s e pelo menos 55 amostras. Referência móvel pode se adaptar ao novo patamar. Recupera com tráfego positivo estável por 30s >=70% da referência ou porta desativada administrativamente. Não inclui interfaces individuais PPPoE.'
+              dependencies:
+                - name: '{HOST.NAME}: interface {#IFNAME} ({#IFALIAS}) sem link por 15 segundos'
+                  expression: 'min(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.oper[{#SNMPINDEX}],15s)<>1 and last(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.oper[{#SNMPINDEX}],#1:now-15s)<>1 and last(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.admin[{#SNMPINDEX}])=1 and (count(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.oper[{#SNMPINDEX}],1h,"eq",1)>0 or {TRIGGER.VALUE}=1)'
+                  recovery_expression: 'last(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.admin[{#SNMPINDEX}])<>1 or (min(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.oper[{#SNMPINDEX}],30s)=1 and last(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.oper[{#SNMPINDEX}],#1:now-30s)=1)'
+                - name: '{HOST.NAME}: sem coleta SNMP por pelo menos 30 segundos'
+                  expression: 'nodata(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.uptime,30s)=1'
+                  recovery_expression: 'nodata(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.uptime,30s)=0'
+                - name: '{HOST.NAME}: sem resposta ICMP por 15 segundos'
+                  expression: 'max(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],15s)=0 and last(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],#1:now-15s)=0'
+                  recovery_expression: 'min(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],30s)=1 and last(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],#1:now-30s)=1'
+              tags:
+                - tag: ifType
+                  value: '{#IFTYPE}'
+                - tag: profile
+                  value: GEST-fast
+            - uuid: 24507d1081a24bfe9c7eb11ea634c40f
+              expression: 'last(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.admin[{#SNMPINDEX}])=1 and last(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.oper[{#SNMPINDEX}])=1 and count(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.out[{#SNMPINDEX}],5m:now-20s)>=55 and avg(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.out[{#SNMPINDEX}],5m:now-20s)>{$GEST.FAST.TRAFFIC.BASELINE} and max(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.out[{#SNMPINDEX}],15s)<=avg(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.out[{#SNMPINDEX}],5m:now-20s)*{$GEST.FAST.TRAFFIC.DROP} and last(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.out[{#SNMPINDEX}],#1:now-15s)<=avg(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.out[{#SNMPINDEX}],5m:now-20s)*{$GEST.FAST.TRAFFIC.DROP}'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'last(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.admin[{#SNMPINDEX}])<>1 or (min(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.out[{#SNMPINDEX}],30s)>0 and min(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.out[{#SNMPINDEX}],30s)>=avg(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.out[{#SNMPINDEX}],5m:now-20s)*{$GEST.FAST.TRAFFIC.RECOVERY} and last(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.out[{#SNMPINDEX}],#1:now-30s)>=avg(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.out[{#SNMPINDEX}],5m:now-20s)*{$GEST.FAST.TRAFFIC.RECOVERY})'
+              name: '{HOST.NAME}: interface {#IFNAME} ({#IFALIAS}): queda de pelo menos 80% na saída'
+              priority: WARNING
+              description: 'Anomalia de tráfego, não prova isolada de falha. Janela completa de 15s <=20% da média (queda >=80%) dos 5min encerrados 20s antes; base >100Mb/s e pelo menos 55 amostras. Referência móvel pode se adaptar ao novo patamar. Recupera com tráfego positivo estável por 30s >=70% da referência ou porta desativada administrativamente. Não inclui interfaces individuais PPPoE.'
+              dependencies:
+                - name: '{HOST.NAME}: interface {#IFNAME} ({#IFALIAS}) sem link por 15 segundos'
+                  expression: 'min(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.oper[{#SNMPINDEX}],15s)<>1 and last(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.oper[{#SNMPINDEX}],#1:now-15s)<>1 and last(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.admin[{#SNMPINDEX}])=1 and (count(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.oper[{#SNMPINDEX}],1h,"eq",1)>0 or {TRIGGER.VALUE}=1)'
+                  recovery_expression: 'last(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.admin[{#SNMPINDEX}])<>1 or (min(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.oper[{#SNMPINDEX}],30s)=1 and last(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.oper[{#SNMPINDEX}],#1:now-30s)=1)'
+                - name: '{HOST.NAME}: sem coleta SNMP por pelo menos 30 segundos'
+                  expression: 'nodata(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.uptime,30s)=1'
+                  recovery_expression: 'nodata(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.uptime,30s)=0'
+                - name: '{HOST.NAME}: sem resposta ICMP por 15 segundos'
+                  expression: 'max(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],15s)=0 and last(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],#1:now-15s)=0'
+                  recovery_expression: 'min(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],30s)=1 and last(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],#1:now-30s)=1'
+              tags:
+                - tag: ifType
+                  value: '{#IFTYPE}'
+                - tag: profile
+                  value: GEST-fast
+            - uuid: b086ff29efcc4fe69124a1c5aa72ffe0
+              expression: 'min(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.oper[{#SNMPINDEX}],15s)<>1 and last(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.oper[{#SNMPINDEX}],#1:now-15s)<>1 and last(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.admin[{#SNMPINDEX}])=1 and (count(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.oper[{#SNMPINDEX}],1h,"eq",1)>0 or {TRIGGER.VALUE}=1)'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'last(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.admin[{#SNMPINDEX}])<>1 or (min(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.oper[{#SNMPINDEX}],30s)=1 and last(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.if.oper[{#SNMPINDEX}],#1:now-30s)=1)'
+              name: '{HOST.NAME}: interface {#IFNAME} ({#IFALIAS}) sem link por 15 segundos'
+              priority: HIGH
+              description: 'Só abre depois de a porta ter sido vista operacional na última hora; evita alertas iniciais para portas já sem uso. A perda contínua mantém o problema aberto. Recupera após 30s de link estável ou desativação administrativa.'
+              dependencies:
+                - name: '{HOST.NAME}: sem coleta SNMP por pelo menos 30 segundos'
+                  expression: 'nodata(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.uptime,30s)=1'
+                  recovery_expression: 'nodata(/GEST - MikroTik Alertas Rapidos/gest.mikrotik.uptime,30s)=0'
+                - name: '{HOST.NAME}: sem resposta ICMP por 15 segundos'
+                  expression: 'max(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],15s)=0 and last(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],#1:now-15s)=0'
+                  recovery_expression: 'min(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],30s)=1 and last(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],#1:now-30s)=1'
+              tags:
+                - tag: ifType
+                  value: '{#IFTYPE}'
+                - tag: profile
+                  value: GEST-fast
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var rows=JSON.parse(value); if(!Array.isArray(rows)) rows=rows.data;
+                  if(!Array.isArray(rows)) throw "Descoberta de interfaces inválida";
+                  var out=[]; for(var i=0;i<rows.length;i++){
+                   var r=rows[i], t=String(r["{#IFTYPE}"]), n=r["{#IFNAME}"];
+                   if(!/^(6|135|136)$/.test(t) || typeof n!=="string" || !n.length) continue;
+                   if(typeof r["{#IFALIAS}"]!=="string") r["{#IFALIAS}"]=""; out.push(r);
+                  } return JSON.stringify(out);
+          overrides:
+            - name: 'GEST: banda por tipo de interface'
+              step: '1'
+              filter:
+                conditions:
+                  - macro: '{#IFTYPE}'
+                    value: '{$GEST.FAST.TRAFFIC.IFTYPE.MATCHES}'
+                    operator: NOT_MATCHES_REGEX
+                    formulaid: A
+              operations:
+                - operationobject: TRIGGER_PROTOTYPE
+                  operator: LIKE
+                  value: 'queda de pelo menos '
+                  status: DISABLED
+            - name: 'GEST: queda de link somente Ethernet'
+              step: '2'
+              filter:
+                conditions:
+                  - macro: '{#IFTYPE}'
+                    value: '{$GEST.FAST.LINK.IFTYPE.MATCHES}'
+                    operator: NOT_MATCHES_REGEX
+                    formulaid: A
+              operations:
+                - operationobject: TRIGGER_PROTOTYPE
+                  operator: LIKE
+                  value: 'sem link por 15 segundos'
+                  status: DISABLED
+            - name: 'GEST: banda por nome de interface'
+              step: '3'
+              filter:
+                conditions:
+                  - macro: '{#IFNAME}'
+                    value: '{$GEST.FAST.TRAFFIC.IFNAME.MATCHES}'
+                    operator: NOT_MATCHES_REGEX
+                    formulaid: A
+              operations:
+                - operationobject: TRIGGER_PROTOTYPE
+                  operator: LIKE
+                  value: 'queda de pelo menos '
+                  status: DISABLED
+      macros:
+        - macro: '{$GEST.FAST.CPU.MAX}'
+          value: '90'
+        - macro: '{$GEST.FAST.DISK.HIGH}'
+          value: '90'
+        - macro: '{$GEST.FAST.DISK.WARN}'
+          value: '80'
+        - macro: '{$GEST.FAST.IF.NAME.EXCLUDE}'
+          value: '^(<.*>|pppoe.*|l2tp.*|sstp.*|pptp.*|ovpn.*|veth.*)$'
+        - macro: '{$GEST.FAST.LATENCY.HIGH}'
+          value: '0.10'
+        - macro: '{$GEST.FAST.LATENCY.WARN}'
+          value: '0.09'
+        - macro: '{$GEST.FAST.LINK.IFTYPE.MATCHES}'
+          value: ^(6|135|136)$
+        - macro: '{$GEST.FAST.MEMORY.MAX}'
+          value: '90'
+        - macro: '{$GEST.FAST.TRAFFIC.BASELINE}'
+          value: '100000000'
+        - macro: '{$GEST.FAST.TRAFFIC.DROP}'
+          value: '0.20'
+        - macro: '{$GEST.FAST.TRAFFIC.IFNAME.MATCHES}'
+          value: '.*'
+        - macro: '{$GEST.FAST.TRAFFIC.IFTYPE.MATCHES}'
+          value: ^(6|135|136)$
+        - macro: '{$GEST.FAST.TRAFFIC.RECOVERY}'
+          value: '0.70'
+  triggers:
+    - uuid: b0987474b17d42fba1014952674b3f47
+      expression: 'min(/GEST - MikroTik Alertas Rapidos/icmppingsec[,3,200,56,1000,avg],15s)>{$GEST.FAST.LATENCY.WARN} and last(/GEST - MikroTik Alertas Rapidos/icmppingsec[,3,200,56,1000,avg],#1:now-15s)>{$GEST.FAST.LATENCY.WARN} and last(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000])=1'
+      recovery_mode: RECOVERY_EXPRESSION
+      recovery_expression: 'max(/GEST - MikroTik Alertas Rapidos/icmppingsec[,3,200,56,1000,avg],30s)<0.08 and last(/GEST - MikroTik Alertas Rapidos/icmppingsec[,3,200,56,1000,avg],#1:now-30s)<0.08'
+      name: '{HOST.NAME}: latência ICMP acima de 90 ms por 15 segundos'
+      priority: WARNING
+      dependencies:
+        - name: '{HOST.NAME}: latência ICMP acima de 100 ms por 15 segundos'
+          expression: 'min(/GEST - MikroTik Alertas Rapidos/icmppingsec[,3,200,56,1000,avg],15s)>{$GEST.FAST.LATENCY.HIGH} and last(/GEST - MikroTik Alertas Rapidos/icmppingsec[,3,200,56,1000,avg],#1:now-15s)>{$GEST.FAST.LATENCY.HIGH} and last(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000])=1'
+          recovery_expression: 'max(/GEST - MikroTik Alertas Rapidos/icmppingsec[,3,200,56,1000,avg],30s)<0.08 and last(/GEST - MikroTik Alertas Rapidos/icmppingsec[,3,200,56,1000,avg],#1:now-30s)<0.08'
+        - name: '{HOST.NAME}: sem resposta ICMP por 15 segundos'
+          expression: 'max(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],15s)=0 and last(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],#1:now-15s)=0'
+          recovery_expression: 'min(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],30s)=1 and last(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],#1:now-30s)=1'
+      tags:
+        - tag: profile
+          value: GEST-fast
+    - uuid: ce93ce2917e04df39f80a4172d65da93
+      expression: 'min(/GEST - MikroTik Alertas Rapidos/icmppingsec[,3,200,56,1000,avg],15s)>{$GEST.FAST.LATENCY.HIGH} and last(/GEST - MikroTik Alertas Rapidos/icmppingsec[,3,200,56,1000,avg],#1:now-15s)>{$GEST.FAST.LATENCY.HIGH} and last(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000])=1'
+      recovery_mode: RECOVERY_EXPRESSION
+      recovery_expression: 'max(/GEST - MikroTik Alertas Rapidos/icmppingsec[,3,200,56,1000,avg],30s)<0.08 and last(/GEST - MikroTik Alertas Rapidos/icmppingsec[,3,200,56,1000,avg],#1:now-30s)<0.08'
+      name: '{HOST.NAME}: latência ICMP acima de 100 ms por 15 segundos'
+      priority: AVERAGE
+      dependencies:
+        - name: '{HOST.NAME}: sem resposta ICMP por 15 segundos'
+          expression: 'max(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],15s)=0 and last(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],#1:now-15s)=0'
+          recovery_expression: 'min(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],30s)=1 and last(/GEST - MikroTik Alertas Rapidos/icmpping[,3,200,56,1000],#1:now-30s)=1'
+      tags:
+        - tag: profile
+          value: GEST-fast

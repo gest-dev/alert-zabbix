@@ -323,3 +323,11 @@ disco, serviços, HTTPS e ICMP mantêm suas regras próprias.
 Referências: [verificações simples](https://www.zabbix.com/documentation/6.4/en/manual/config/items/itemtypes/simple_checks),
 [funções de histórico](https://www.zabbix.com/documentation/6.4/en/manual/appendix/functions/history)
 e [condição adicional de recuperação](https://www.zabbix.com/documentation/6.4/en/manual/config/triggers/expression).
+
+## OLT ZTE TITAN
+
+A configuração da OLT UrTelecom C620, métricas disponíveis, intervalos, alertas e o template sem credenciais estão descritos em [ZTE-TITAN.md](ZTE-TITAN.md).
+
+## MikroTik: sensibilidade e queda de banda
+
+O perfil adicional dos 12 hosts, com confirmação de falha em 15 segundos, limites de latência e detecção de queda de banda, está descrito em [MIKROTIK-ALERTAS-RAPIDOS.md](MIKROTIK-ALERTAS-RAPIDOS.md). O documento explica também os limites do SNMP, macros, validação e reversão.
