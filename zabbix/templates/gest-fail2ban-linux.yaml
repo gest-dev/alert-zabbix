@@ -1,0 +1,52 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: e601af49d1d7433fb98d565188559f68
+      name: GEST
+  templates:
+    - uuid: 25bb63bc2b104144b3b85600b343d661
+      template: 'GEST - Fail2Ban Linux'
+      name: 'GEST - Fail2Ban Linux'
+      description: 'Estado do serviço Fail2Ban pelo UserParameter fail2ban.status, compatível com Zabbix agent e Agent 2. Coleta a cada 30 segundos; alerta Alto após 2 minutos de valores zero, com amostras suficientes e conferência no início da janela. Recupera na primeira leitura 1. Requer o parâmetro personalizado nos agentes. Não consulta jails ou quantidade de IPs banidos. Manter os alertas de comunicação do agente.'
+      groups:
+        - name: GEST
+      items:
+        - uuid: 98f8b179450946b58c88bc51cc3a1c6f
+          name: 'Fail2Ban · estado do serviço'
+          key: fail2ban.status
+          delay: 30s
+          history: 7d
+          trends: 90d
+          description: '1: serviço ativo; 0: serviço inativo. Lê o UserParameter configurado no agente. Ausência de coleta não equivale a serviço parado.'
+          valuemap:
+            name: 'GEST - Fail2Ban'
+          tags:
+            - tag: component
+              value: security
+            - tag: service
+              value: fail2ban
+          triggers:
+            - uuid: 54ef349a89154d109496575cacdbd102
+              expression: 'max(/GEST - Fail2Ban Linux/fail2ban.status,2m)=0 and count(/GEST - Fail2Ban Linux/fail2ban.status,2m)>=4 and last(/GEST - Fail2Ban Linux/fail2ban.status,#1:now-2m)=0'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'last(/GEST - Fail2Ban Linux/fail2ban.status)=1'
+              name: 'Fail2Ban está inativo em {HOST.NAME}'
+              opdata: 'Estado: {ITEM.LASTVALUE1}'
+              priority: HIGH
+              description: 'Confirma 2 minutos de inatividade com coleta a cada 30 segundos. Exige pelo menos quatro amostras na janela e uma leitura zero no início do período para evitar alerta prematuro no cadastro ou após lacuna de dados. Recupera na primeira leitura ativa. Tempo de coleta e envio podem acrescentar atraso.'
+              tags:
+                - tag: component
+                  value: security
+                - tag: scope
+                  value: availability
+                - tag: service
+                  value: fail2ban
+      valuemaps:
+        - uuid: 06acd2e82af846bfbeac5552913753ef
+          name: 'GEST - Fail2Ban'
+          mappings:
+            - value: '0'
+              newvalue: Inativo
+            - value: '1'
+              newvalue: Ativo
+

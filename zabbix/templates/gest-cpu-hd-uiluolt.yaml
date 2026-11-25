@@ -1,0 +1,441 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: e601af49d1d7433fb98d565188559f68
+      name: GEST
+  templates:
+    - uuid: f4cae2af913d49a39802e58486f10a5e
+      template: GEST-cpu-hd-uiluolt
+      name: GEST-cpu-hd-uiluolt
+      description: 'VM uiluolt com base Linux: CPU, memória, discos, rede e uptime. Padrão GEST de disco 90%/95% por três coletas e falha TCP do agente por 1 minuto. Verifica processo e porta uiluolt, MongoDB, PM2, GenieACS e OpenVPN pelo Agent 2. Serviços: 1 minuto de falha e 30 segundos de recuperação. Reaplicar configurar_template_uiluolt.py após importar para ajustar os status herdados. Não usa credenciais de banco.'
+      templates:
+        - name: 'Linux by Zabbix agent'
+      groups:
+        - name: GEST
+      items:
+        - uuid: 20c2dff4d2d1457d8f3d3d3f10054e97
+          name: 'Zabbix agent: conexão TCP rápida'
+          type: SIMPLE
+          key: 'net.tcp.service[tcp,,{$GEST.AGENT.PORT}]'
+          delay: '{$GEST.AGENT.CHECK.INTERVAL}'
+          history: 7d
+          trends: 90d
+          description: 'Servidor/proxy verifica a porta TCP do agente, independentemente da espera do poller de agentes indisponíveis. Confirma conectividade TCP, não a execução das métricas. Abre alerta após 1 minuto de falhas observadas e recupera após 30 segundos de respostas positivas estáveis.'
+          valuemap:
+            name: 'GEST - Conexão agente TCP'
+          tags:
+            - tag: component
+              value: zabbix-agent
+            - tag: scope
+              value: availability
+          triggers:
+            - uuid: 648d71a764ee4cfbbaab9eb32b8410b6
+              expression: 'max(/GEST-cpu-hd-uiluolt/net.tcp.service[tcp,,{$GEST.AGENT.PORT}],1m)=0 and last(/GEST-cpu-hd-uiluolt/net.tcp.service[tcp,,{$GEST.AGENT.PORT}],#1:now-1m)=0'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'min(/GEST-cpu-hd-uiluolt/net.tcp.service[tcp,,{$GEST.AGENT.PORT}],30s)=1 and last(/GEST-cpu-hd-uiluolt/net.tcp.service[tcp,,{$GEST.AGENT.PORT}],#1:now-30s)=1'
+              name: '{HOST.NAME}: conexão com o agente Zabbix indisponível'
+              opdata: 'Conexão TCP: {ITEM.LASTVALUE1}'
+              priority: AVERAGE
+              description: 'Confirma falha TCP por 1 minuto e recuperação por 30 segundos, com coleta padrão a cada 5 segundos. O valor no início de cada janela também é conferido para não confirmar estabilidade com uma única amostra após intervalo sem coleta. Timeout, processamento e entrega do mensageiro podem acrescentar atraso.'
+              tags:
+                - tag: component
+                  value: zabbix-agent
+                - tag: scope
+                  value: availability
+        - uuid: 8f5c45eb92f0448e810842a39a0486a6
+          name: 'uiluolt: porta da aplicação'
+          type: SIMPLE
+          key: 'net.tcp.service[tcp,,{$UILUOLT.APP.PORT}]'
+          delay: '{$UILUOLT.INTERVAL}'
+          history: 7d
+          trends: 90d
+          valuemap:
+            name: 'GEST - Serviço disponível'
+          tags:
+            - tag: application
+              value: uiluolt
+            - tag: component
+              value: service
+          triggers:
+            - uuid: 3fab3e0469714a47bb21bda583ea6ccc
+              expression: 'max(/GEST-cpu-hd-uiluolt/net.tcp.service[tcp,,{$UILUOLT.APP.PORT}],1m)=0 and last(/GEST-cpu-hd-uiluolt/net.tcp.service[tcp,,{$UILUOLT.APP.PORT}],#1:now-1m)=0'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'min(/GEST-cpu-hd-uiluolt/net.tcp.service[tcp,,{$UILUOLT.APP.PORT}],30s)>=1 and last(/GEST-cpu-hd-uiluolt/net.tcp.service[tcp,,{$UILUOLT.APP.PORT}],#1:now-30s)>=1'
+              name: '{HOST.NAME}: uiluolt: porta da aplicação indisponível'
+              priority: HIGH
+              description: 'Falha contínua por 1 minuto, recuperação após 30 segundos estáveis. As expressões conferem também o início da janela para evitar confirmação com poucas amostras. Porta e processo não confirmam operações internas da aplicação.'
+              tags:
+                - tag: application
+                  value: uiluolt
+                - tag: component
+                  value: service
+        - uuid: c4616a0e570b47928b158aaea6c164c9
+          name: 'MongoDB: porta local'
+          key: 'net.tcp.service[tcp,127.0.0.1,{$UILUOLT.MONGODB.PORT}]'
+          delay: '{$UILUOLT.INTERVAL}'
+          history: 7d
+          trends: 90d
+          valuemap:
+            name: 'GEST - Serviço disponível'
+          tags:
+            - tag: application
+              value: uiluolt
+            - tag: component
+              value: service
+          triggers:
+            - uuid: 8174790c2bd3411aa1aa0a3f3ec23dda
+              expression: 'max(/GEST-cpu-hd-uiluolt/net.tcp.service[tcp,127.0.0.1,{$UILUOLT.MONGODB.PORT}],1m)=0 and last(/GEST-cpu-hd-uiluolt/net.tcp.service[tcp,127.0.0.1,{$UILUOLT.MONGODB.PORT}],#1:now-1m)=0'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'min(/GEST-cpu-hd-uiluolt/net.tcp.service[tcp,127.0.0.1,{$UILUOLT.MONGODB.PORT}],30s)>=1 and last(/GEST-cpu-hd-uiluolt/net.tcp.service[tcp,127.0.0.1,{$UILUOLT.MONGODB.PORT}],#1:now-30s)>=1'
+              name: '{HOST.NAME}: MongoDB: porta local indisponível'
+              priority: HIGH
+              description: 'Falha contínua por 1 minuto, recuperação após 30 segundos estáveis. As expressões conferem também o início da janela para evitar confirmação com poucas amostras. Porta e processo não confirmam operações internas da aplicação.'
+              tags:
+                - tag: application
+                  value: uiluolt
+                - tag: component
+                  value: service
+        - uuid: 0db1f925ceee4078b181709405f04f25
+          name: 'uiluolt: processo Node.js'
+          key: 'proc.num[,,,"{$UILUOLT.PROCESS.MATCHES}"]'
+          delay: '{$UILUOLT.INTERVAL}'
+          history: 7d
+          trends: 90d
+          tags:
+            - tag: application
+              value: uiluolt
+            - tag: component
+              value: service
+          triggers:
+            - uuid: a656cf221a8f4489bb79399240f3fd0d
+              expression: 'max(/GEST-cpu-hd-uiluolt/proc.num[,,,"{$UILUOLT.PROCESS.MATCHES}"],1m)=0 and last(/GEST-cpu-hd-uiluolt/proc.num[,,,"{$UILUOLT.PROCESS.MATCHES}"],#1:now-1m)=0'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'min(/GEST-cpu-hd-uiluolt/proc.num[,,,"{$UILUOLT.PROCESS.MATCHES}"],30s)>=1 and last(/GEST-cpu-hd-uiluolt/proc.num[,,,"{$UILUOLT.PROCESS.MATCHES}"],#1:now-30s)>=1'
+              name: '{HOST.NAME}: uiluolt: processo Node.js indisponível'
+              priority: HIGH
+              description: 'Falha contínua por 1 minuto, recuperação após 30 segundos estáveis. As expressões conferem também o início da janela para evitar confirmação com poucas amostras. Porta e processo não confirmam operações internas da aplicação.'
+              tags:
+                - tag: application
+                  value: uiluolt
+                - tag: component
+                  value: service
+        - uuid: ed33326e60f44906b372b7dbc34da64f
+          name: 'GenieACS CWMP: serviço systemd'
+          key: 'systemd.unit.info[{$UILUOLT.SERVICE.GENIEACS.CWMP},ActiveState]'
+          delay: '{$UILUOLT.INTERVAL}'
+          history: 7d
+          trends: 90d
+          valuemap:
+            name: 'GEST - Serviço disponível'
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - 'return (value === "active" || value === "reloading") ? 1 : 0;'
+          tags:
+            - tag: application
+              value: uiluolt
+            - tag: component
+              value: service
+          triggers:
+            - uuid: a02f49633a774f159ba006b87a50ec16
+              expression: 'max(/GEST-cpu-hd-uiluolt/systemd.unit.info[{$UILUOLT.SERVICE.GENIEACS.CWMP},ActiveState],1m)=0 and last(/GEST-cpu-hd-uiluolt/systemd.unit.info[{$UILUOLT.SERVICE.GENIEACS.CWMP},ActiveState],#1:now-1m)=0'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'min(/GEST-cpu-hd-uiluolt/systemd.unit.info[{$UILUOLT.SERVICE.GENIEACS.CWMP},ActiveState],30s)>=1 and last(/GEST-cpu-hd-uiluolt/systemd.unit.info[{$UILUOLT.SERVICE.GENIEACS.CWMP},ActiveState],#1:now-30s)>=1'
+              name: '{HOST.NAME}: GenieACS CWMP: serviço systemd indisponível'
+              priority: HIGH
+              description: 'Falha contínua por 1 minuto, recuperação após 30 segundos estáveis. As expressões conferem também o início da janela para evitar confirmação com poucas amostras. Porta e processo não confirmam operações internas da aplicação.'
+              tags:
+                - tag: application
+                  value: uiluolt
+                - tag: component
+                  value: service
+        - uuid: 8ea83816a5c542cdab640ace18fca60b
+          name: 'GenieACS FS: serviço systemd'
+          key: 'systemd.unit.info[{$UILUOLT.SERVICE.GENIEACS.FS},ActiveState]'
+          delay: '{$UILUOLT.INTERVAL}'
+          history: 7d
+          trends: 90d
+          valuemap:
+            name: 'GEST - Serviço disponível'
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - 'return (value === "active" || value === "reloading") ? 1 : 0;'
+          tags:
+            - tag: application
+              value: uiluolt
+            - tag: component
+              value: service
+          triggers:
+            - uuid: 18707d5578df49c78787e5887861acbb
+              expression: 'max(/GEST-cpu-hd-uiluolt/systemd.unit.info[{$UILUOLT.SERVICE.GENIEACS.FS},ActiveState],1m)=0 and last(/GEST-cpu-hd-uiluolt/systemd.unit.info[{$UILUOLT.SERVICE.GENIEACS.FS},ActiveState],#1:now-1m)=0'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'min(/GEST-cpu-hd-uiluolt/systemd.unit.info[{$UILUOLT.SERVICE.GENIEACS.FS},ActiveState],30s)>=1 and last(/GEST-cpu-hd-uiluolt/systemd.unit.info[{$UILUOLT.SERVICE.GENIEACS.FS},ActiveState],#1:now-30s)>=1'
+              name: '{HOST.NAME}: GenieACS FS: serviço systemd indisponível'
+              priority: HIGH
+              description: 'Falha contínua por 1 minuto, recuperação após 30 segundos estáveis. As expressões conferem também o início da janela para evitar confirmação com poucas amostras. Porta e processo não confirmam operações internas da aplicação.'
+              tags:
+                - tag: application
+                  value: uiluolt
+                - tag: component
+                  value: service
+        - uuid: 73f9ae47187744258cd664b4d777ccb9
+          name: 'GenieACS NBI: serviço systemd'
+          key: 'systemd.unit.info[{$UILUOLT.SERVICE.GENIEACS.NBI},ActiveState]'
+          delay: '{$UILUOLT.INTERVAL}'
+          history: 7d
+          trends: 90d
+          valuemap:
+            name: 'GEST - Serviço disponível'
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - 'return (value === "active" || value === "reloading") ? 1 : 0;'
+          tags:
+            - tag: application
+              value: uiluolt
+            - tag: component
+              value: service
+          triggers:
+            - uuid: fa1a17b81a754823b4097423df7ef878
+              expression: 'max(/GEST-cpu-hd-uiluolt/systemd.unit.info[{$UILUOLT.SERVICE.GENIEACS.NBI},ActiveState],1m)=0 and last(/GEST-cpu-hd-uiluolt/systemd.unit.info[{$UILUOLT.SERVICE.GENIEACS.NBI},ActiveState],#1:now-1m)=0'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'min(/GEST-cpu-hd-uiluolt/systemd.unit.info[{$UILUOLT.SERVICE.GENIEACS.NBI},ActiveState],30s)>=1 and last(/GEST-cpu-hd-uiluolt/systemd.unit.info[{$UILUOLT.SERVICE.GENIEACS.NBI},ActiveState],#1:now-30s)>=1'
+              name: '{HOST.NAME}: GenieACS NBI: serviço systemd indisponível'
+              priority: HIGH
+              description: 'Falha contínua por 1 minuto, recuperação após 30 segundos estáveis. As expressões conferem também o início da janela para evitar confirmação com poucas amostras. Porta e processo não confirmam operações internas da aplicação.'
+              tags:
+                - tag: application
+                  value: uiluolt
+                - tag: component
+                  value: service
+        - uuid: 00bbcd816ae14c9890168bc511f9118c
+          name: 'GenieACS UI: serviço systemd'
+          key: 'systemd.unit.info[{$UILUOLT.SERVICE.GENIEACS.UI},ActiveState]'
+          delay: '{$UILUOLT.INTERVAL}'
+          history: 7d
+          trends: 90d
+          valuemap:
+            name: 'GEST - Serviço disponível'
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - 'return (value === "active" || value === "reloading") ? 1 : 0;'
+          tags:
+            - tag: application
+              value: uiluolt
+            - tag: component
+              value: service
+          triggers:
+            - uuid: 635891650a4e406195d9fc7f821ccedd
+              expression: 'max(/GEST-cpu-hd-uiluolt/systemd.unit.info[{$UILUOLT.SERVICE.GENIEACS.UI},ActiveState],1m)=0 and last(/GEST-cpu-hd-uiluolt/systemd.unit.info[{$UILUOLT.SERVICE.GENIEACS.UI},ActiveState],#1:now-1m)=0'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'min(/GEST-cpu-hd-uiluolt/systemd.unit.info[{$UILUOLT.SERVICE.GENIEACS.UI},ActiveState],30s)>=1 and last(/GEST-cpu-hd-uiluolt/systemd.unit.info[{$UILUOLT.SERVICE.GENIEACS.UI},ActiveState],#1:now-30s)>=1'
+              name: '{HOST.NAME}: GenieACS UI: serviço systemd indisponível'
+              priority: HIGH
+              description: 'Falha contínua por 1 minuto, recuperação após 30 segundos estáveis. As expressões conferem também o início da janela para evitar confirmação com poucas amostras. Porta e processo não confirmam operações internas da aplicação.'
+              tags:
+                - tag: application
+                  value: uiluolt
+                - tag: component
+                  value: service
+        - uuid: d80c306e0c6b4f35a1cc51d94f0f7742
+          name: 'MongoDB: serviço systemd'
+          key: 'systemd.unit.info[{$UILUOLT.SERVICE.MONGODB},ActiveState]'
+          delay: '{$UILUOLT.INTERVAL}'
+          history: 7d
+          trends: 90d
+          valuemap:
+            name: 'GEST - Serviço disponível'
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - 'return (value === "active" || value === "reloading") ? 1 : 0;'
+          tags:
+            - tag: application
+              value: uiluolt
+            - tag: component
+              value: service
+          triggers:
+            - uuid: 78767679e22448e1a8f24d60f89cc8fa
+              expression: 'max(/GEST-cpu-hd-uiluolt/systemd.unit.info[{$UILUOLT.SERVICE.MONGODB},ActiveState],1m)=0 and last(/GEST-cpu-hd-uiluolt/systemd.unit.info[{$UILUOLT.SERVICE.MONGODB},ActiveState],#1:now-1m)=0'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'min(/GEST-cpu-hd-uiluolt/systemd.unit.info[{$UILUOLT.SERVICE.MONGODB},ActiveState],30s)>=1 and last(/GEST-cpu-hd-uiluolt/systemd.unit.info[{$UILUOLT.SERVICE.MONGODB},ActiveState],#1:now-30s)>=1'
+              name: '{HOST.NAME}: MongoDB: serviço systemd indisponível'
+              priority: HIGH
+              description: 'Falha contínua por 1 minuto, recuperação após 30 segundos estáveis. As expressões conferem também o início da janela para evitar confirmação com poucas amostras. Porta e processo não confirmam operações internas da aplicação.'
+              tags:
+                - tag: application
+                  value: uiluolt
+                - tag: component
+                  value: service
+        - uuid: a1e288e12eab4c3288f2633b94c96335
+          name: 'OpenVPN RouterOS 6: serviço systemd'
+          key: 'systemd.unit.info[{$UILUOLT.SERVICE.OPENVPN.ROUTEROS6},ActiveState]'
+          delay: '{$UILUOLT.INTERVAL}'
+          history: 7d
+          trends: 90d
+          valuemap:
+            name: 'GEST - Serviço disponível'
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - 'return (value === "active" || value === "reloading") ? 1 : 0;'
+          tags:
+            - tag: application
+              value: uiluolt
+            - tag: component
+              value: service
+          triggers:
+            - uuid: aa28b2ce9d504495b83fb69a92617113
+              expression: 'max(/GEST-cpu-hd-uiluolt/systemd.unit.info[{$UILUOLT.SERVICE.OPENVPN.ROUTEROS6},ActiveState],1m)=0 and last(/GEST-cpu-hd-uiluolt/systemd.unit.info[{$UILUOLT.SERVICE.OPENVPN.ROUTEROS6},ActiveState],#1:now-1m)=0'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'min(/GEST-cpu-hd-uiluolt/systemd.unit.info[{$UILUOLT.SERVICE.OPENVPN.ROUTEROS6},ActiveState],30s)>=1 and last(/GEST-cpu-hd-uiluolt/systemd.unit.info[{$UILUOLT.SERVICE.OPENVPN.ROUTEROS6},ActiveState],#1:now-30s)>=1'
+              name: '{HOST.NAME}: OpenVPN RouterOS 6: serviço systemd indisponível'
+              priority: HIGH
+              description: 'Falha contínua por 1 minuto, recuperação após 30 segundos estáveis. As expressões conferem também o início da janela para evitar confirmação com poucas amostras. Porta e processo não confirmam operações internas da aplicação.'
+              tags:
+                - tag: application
+                  value: uiluolt
+                - tag: component
+                  value: service
+        - uuid: 9fb847a193ab4d8a9301e936fd6cf31f
+          name: 'OpenVPN: serviço systemd'
+          key: 'systemd.unit.info[{$UILUOLT.SERVICE.OPENVPN},ActiveState]'
+          delay: '{$UILUOLT.INTERVAL}'
+          history: 7d
+          trends: 90d
+          valuemap:
+            name: 'GEST - Serviço disponível'
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - 'return (value === "active" || value === "reloading") ? 1 : 0;'
+          tags:
+            - tag: application
+              value: uiluolt
+            - tag: component
+              value: service
+          triggers:
+            - uuid: d6787c204a3c4921be26285cc0e6d2b4
+              expression: 'max(/GEST-cpu-hd-uiluolt/systemd.unit.info[{$UILUOLT.SERVICE.OPENVPN},ActiveState],1m)=0 and last(/GEST-cpu-hd-uiluolt/systemd.unit.info[{$UILUOLT.SERVICE.OPENVPN},ActiveState],#1:now-1m)=0'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'min(/GEST-cpu-hd-uiluolt/systemd.unit.info[{$UILUOLT.SERVICE.OPENVPN},ActiveState],30s)>=1 and last(/GEST-cpu-hd-uiluolt/systemd.unit.info[{$UILUOLT.SERVICE.OPENVPN},ActiveState],#1:now-30s)>=1'
+              name: '{HOST.NAME}: OpenVPN: serviço systemd indisponível'
+              priority: HIGH
+              description: 'Falha contínua por 1 minuto, recuperação após 30 segundos estáveis. As expressões conferem também o início da janela para evitar confirmação com poucas amostras. Porta e processo não confirmam operações internas da aplicação.'
+              tags:
+                - tag: application
+                  value: uiluolt
+                - tag: component
+                  value: service
+        - uuid: bc72884380734eb692e6623b7bd264f5
+          name: 'PM2: serviço systemd'
+          key: 'systemd.unit.info[{$UILUOLT.SERVICE.PM2},ActiveState]'
+          delay: '{$UILUOLT.INTERVAL}'
+          history: 7d
+          trends: 90d
+          valuemap:
+            name: 'GEST - Serviço disponível'
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - 'return (value === "active" || value === "reloading") ? 1 : 0;'
+          tags:
+            - tag: application
+              value: uiluolt
+            - tag: component
+              value: service
+          triggers:
+            - uuid: 48ee61157daa48ff8d6e70a4eb536202
+              expression: 'max(/GEST-cpu-hd-uiluolt/systemd.unit.info[{$UILUOLT.SERVICE.PM2},ActiveState],1m)=0 and last(/GEST-cpu-hd-uiluolt/systemd.unit.info[{$UILUOLT.SERVICE.PM2},ActiveState],#1:now-1m)=0'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'min(/GEST-cpu-hd-uiluolt/systemd.unit.info[{$UILUOLT.SERVICE.PM2},ActiveState],30s)>=1 and last(/GEST-cpu-hd-uiluolt/systemd.unit.info[{$UILUOLT.SERVICE.PM2},ActiveState],#1:now-30s)>=1'
+              name: '{HOST.NAME}: PM2: serviço systemd indisponível'
+              priority: HIGH
+              description: 'Falha contínua por 1 minuto, recuperação após 30 segundos estáveis. As expressões conferem também o início da janela para evitar confirmação com poucas amostras. Porta e processo não confirmam operações internas da aplicação.'
+              tags:
+                - tag: application
+                  value: uiluolt
+                - tag: component
+                  value: service
+        - uuid: d3a0607823114c499128d07533900570
+          name: 'Disco /: espaço livre'
+          key: 'vfs.fs.size[/,free]'
+          history: 7d
+          trends: 90d
+          units: B
+          tags:
+            - tag: component
+              value: storage
+      macros:
+        - macro: '{$GEST.AGENT.CHECK.INTERVAL}'
+          value: 5s
+          description: 'Intervalo da checagem TCP. Confirma falha por 1 minuto e recuperação por 30 segundos.'
+        - macro: '{$GEST.AGENT.PORT}'
+          value: '10050'
+          description: 'Porta TCP do agente, consultada pelo servidor/proxy.'
+        - macro: '{$GEST.FS.PUSED.CRIT}'
+          value: '95'
+          description: 'Percentual para alerta alto de ocupação; exige três coletas consecutivas.'
+        - macro: '{$GEST.FS.PUSED.CRIT.RECOVERY}'
+          value: '93'
+          description: 'Recupera o alerta alto abaixo deste percentual.'
+        - macro: '{$GEST.FS.PUSED.WARN}'
+          value: '90'
+          description: 'Percentual para aviso de ocupação; exige três coletas consecutivas.'
+        - macro: '{$GEST.FS.PUSED.WARN.RECOVERY}'
+          value: '88'
+          description: 'Recupera o aviso abaixo deste percentual.'
+        - macro: '{$UILUOLT.APP.PORT}'
+          value: '3333'
+          description: 'Porta da aplicação, consultada pelo servidor Zabbix.'
+        - macro: '{$UILUOLT.INTERVAL}'
+          value: 15s
+          description: 'Intervalo das verificações dos serviços.'
+        - macro: '{$UILUOLT.MONGODB.PORT}'
+          value: '27017'
+          description: 'Porta MongoDB consultada localmente pelo agente.'
+        - macro: '{$UILUOLT.PROCESS.MATCHES}'
+          value: /root/uiluolt/build/bin/server\.js
+          description: 'Expressão regular do processo da aplicação, sem considerar outros processos Node.js.'
+        - macro: '{$UILUOLT.SERVICE.GENIEACS.CWMP}'
+          value: genieacs-cwmp.service
+          description: 'Unidade systemd de GenieACS CWMP.'
+        - macro: '{$UILUOLT.SERVICE.GENIEACS.FS}'
+          value: genieacs-fs.service
+          description: 'Unidade systemd de GenieACS FS.'
+        - macro: '{$UILUOLT.SERVICE.GENIEACS.NBI}'
+          value: genieacs-nbi.service
+          description: 'Unidade systemd de GenieACS NBI.'
+        - macro: '{$UILUOLT.SERVICE.GENIEACS.UI}'
+          value: genieacs-ui.service
+          description: 'Unidade systemd de GenieACS UI.'
+        - macro: '{$UILUOLT.SERVICE.MONGODB}'
+          value: mongod.service
+          description: 'Unidade systemd de MongoDB.'
+        - macro: '{$UILUOLT.SERVICE.OPENVPN}'
+          value: openvpn-server@server.service
+          description: 'Unidade systemd de OpenVPN.'
+        - macro: '{$UILUOLT.SERVICE.OPENVPN.ROUTEROS6}'
+          value: openvpn-server@server-routeros6.service
+          description: 'Unidade systemd de OpenVPN RouterOS 6.'
+        - macro: '{$UILUOLT.SERVICE.PM2}'
+          value: pm2-root.service
+          description: 'Unidade systemd de PM2.'
+      valuemaps:
+        - uuid: dbd68dcf8f724637b57f8f85442219c0
+          name: 'GEST - Conexão agente TCP'
+          mappings:
+            - value: '0'
+              newvalue: Indisponível
+            - value: '1'
+              newvalue: Disponível
+        - uuid: be8fe662887040d983c5f587ed4e412d
+          name: 'GEST - Serviço disponível'
+          mappings:
+            - value: '0'
+              newvalue: Indisponível
+            - value: '1'
+              newvalue: Disponível
+

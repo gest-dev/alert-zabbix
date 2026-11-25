@@ -1,0 +1,1155 @@
+{
+  "dashboardid": "1",
+  "widgets": [
+    {
+      "widgetid": "1",
+      "type": "tophosts",
+      "name": "Servidores · ocupação de disco, espaço livre e CPU",
+      "x": "0",
+      "y": "2",
+      "width": "24",
+      "height": "4",
+      "view_mode": "0",
+      "fields": [
+        {
+          "type": "1",
+          "name": "columns.name.0",
+          "value": "Servidor"
+        },
+        {
+          "type": "0",
+          "name": "columns.data.0",
+          "value": "2"
+        },
+        {
+          "type": "1",
+          "name": "columns.name.1",
+          "value": "HD usado"
+        },
+        {
+          "type": "0",
+          "name": "columns.data.1",
+          "value": "1"
+        },
+        {
+          "type": "1",
+          "name": "columns.item.1",
+          "value": "/: Space utilization"
+        },
+        {
+          "type": "1",
+          "name": "columns.min.1",
+          "value": "0"
+        },
+        {
+          "type": "1",
+          "name": "columns.max.1",
+          "value": "100"
+        },
+        {
+          "type": "0",
+          "name": "columns.decimal_places.1",
+          "value": "1"
+        },
+        {
+          "type": "0",
+          "name": "columns.display.1",
+          "value": "2"
+        },
+        {
+          "type": "1",
+          "name": "columns.base_color.1",
+          "value": "60A5FA"
+        },
+        {
+          "type": "1",
+          "name": "columnsthresholds.color.1.0",
+          "value": "FBBF24"
+        },
+        {
+          "type": "1",
+          "name": "columnsthresholds.threshold.1.0",
+          "value": "90"
+        },
+        {
+          "type": "1",
+          "name": "columnsthresholds.color.1.1",
+          "value": "F87171"
+        },
+        {
+          "type": "1",
+          "name": "columnsthresholds.threshold.1.1",
+          "value": "95"
+        },
+        {
+          "type": "1",
+          "name": "columns.name.2",
+          "value": "HD livre"
+        },
+        {
+          "type": "0",
+          "name": "columns.data.2",
+          "value": "1"
+        },
+        {
+          "type": "1",
+          "name": "columns.item.2",
+          "value": "Disco /: espaço livre"
+        },
+        {
+          "type": "0",
+          "name": "columns.decimal_places.2",
+          "value": "1"
+        },
+        {
+          "type": "0",
+          "name": "columns.display.2",
+          "value": "1"
+        },
+        {
+          "type": "1",
+          "name": "columns.base_color.2",
+          "value": ""
+        },
+        {
+          "type": "0",
+          "name": "column",
+          "value": "1"
+        },
+        {
+          "type": "0",
+          "name": "rf_rate",
+          "value": "10"
+        },
+        {
+          "type": "1",
+          "name": "columns.base_color.0",
+          "value": ""
+        },
+        {
+          "type": "1",
+          "name": "columns.timeshift.1",
+          "value": ""
+        },
+        {
+          "type": "0",
+          "name": "columns.aggregate_function.1",
+          "value": "0"
+        },
+        {
+          "type": "0",
+          "name": "columns.history.1",
+          "value": "1"
+        },
+        {
+          "type": "1",
+          "name": "columns.timeshift.2",
+          "value": ""
+        },
+        {
+          "type": "0",
+          "name": "columns.aggregate_function.2",
+          "value": "0"
+        },
+        {
+          "type": "0",
+          "name": "columns.history.2",
+          "value": "1"
+        },
+        {
+          "type": "3",
+          "name": "hostids",
+          "value": "10641"
+        },
+        {
+          "type": "3",
+          "name": "hostids",
+          "value": "10626"
+        },
+        {
+          "type": "3",
+          "name": "hostids",
+          "value": "10627"
+        },
+        {
+          "type": "1",
+          "name": "columns.name.3",
+          "value": "CPU"
+        },
+        {
+          "type": "0",
+          "name": "columns.data.3",
+          "value": "1"
+        },
+        {
+          "type": "1",
+          "name": "columns.item.3",
+          "value": "Linux: CPU utilization"
+        },
+        {
+          "type": "1",
+          "name": "columns.timeshift.3",
+          "value": ""
+        },
+        {
+          "type": "0",
+          "name": "columns.aggregate_function.3",
+          "value": "0"
+        },
+        {
+          "type": "0",
+          "name": "columns.history.3",
+          "value": "1"
+        },
+        {
+          "type": "0",
+          "name": "columns.display.3",
+          "value": "2"
+        },
+        {
+          "type": "0",
+          "name": "columns.decimal_places.3",
+          "value": "1"
+        },
+        {
+          "type": "1",
+          "name": "columns.base_color.3",
+          "value": "34D399"
+        },
+        {
+          "type": "1",
+          "name": "columns.min.3",
+          "value": "0"
+        },
+        {
+          "type": "1",
+          "name": "columns.max.3",
+          "value": "100"
+        },
+        {
+          "type": "1",
+          "name": "columnsthresholds.threshold.3.0",
+          "value": "70"
+        },
+        {
+          "type": "1",
+          "name": "columnsthresholds.color.3.0",
+          "value": "FBBF24"
+        },
+        {
+          "type": "1",
+          "name": "columnsthresholds.threshold.3.1",
+          "value": "90"
+        },
+        {
+          "type": "1",
+          "name": "columnsthresholds.color.3.1",
+          "value": "F87171"
+        },
+        {
+          "type": "1",
+          "name": "columns.name.4",
+          "value": "Memória"
+        },
+        {
+          "type": "0",
+          "name": "columns.data.4",
+          "value": "1"
+        },
+        {
+          "type": "1",
+          "name": "columns.item.4",
+          "value": "Linux: Memory utilization"
+        },
+        {
+          "type": "1",
+          "name": "columns.timeshift.4",
+          "value": ""
+        },
+        {
+          "type": "0",
+          "name": "columns.aggregate_function.4",
+          "value": "0"
+        },
+        {
+          "type": "0",
+          "name": "columns.history.4",
+          "value": "1"
+        },
+        {
+          "type": "0",
+          "name": "columns.display.4",
+          "value": "2"
+        },
+        {
+          "type": "0",
+          "name": "columns.decimal_places.4",
+          "value": "1"
+        },
+        {
+          "type": "1",
+          "name": "columns.base_color.4",
+          "value": "A78BFA"
+        },
+        {
+          "type": "1",
+          "name": "columns.min.4",
+          "value": "0"
+        },
+        {
+          "type": "1",
+          "name": "columns.max.4",
+          "value": "100"
+        },
+        {
+          "type": "1",
+          "name": "columnsthresholds.threshold.4.0",
+          "value": "80"
+        },
+        {
+          "type": "1",
+          "name": "columnsthresholds.color.4.0",
+          "value": "FBBF24"
+        },
+        {
+          "type": "1",
+          "name": "columnsthresholds.threshold.4.1",
+          "value": "90"
+        },
+        {
+          "type": "1",
+          "name": "columnsthresholds.color.4.1",
+          "value": "F87171"
+        },
+        {
+          "type": "3",
+          "name": "hostids",
+          "value": "10635"
+        },
+        {
+          "type": "0",
+          "name": "columns.aggregate_function.0",
+          "value": "0"
+        },
+        {
+          "type": "0",
+          "name": "columns.decimal_places.0",
+          "value": "2"
+        },
+        {
+          "type": "3",
+          "name": "hostids",
+          "value": "10649"
+        }
+      ]
+    },
+    {
+      "widgetid": "23531",
+      "type": "tophosts",
+      "name": "Servidores · comparação de capacidade por host",
+      "x": "0",
+      "y": "0",
+      "width": "24",
+      "height": "4",
+      "view_mode": "0",
+      "fields": [
+        {
+          "type": "0",
+          "name": "rf_rate",
+          "value": "30"
+        },
+        {
+          "type": "0",
+          "name": "column",
+          "value": "1"
+        },
+        {
+          "type": "3",
+          "name": "hostids",
+          "value": "10641"
+        },
+        {
+          "type": "3",
+          "name": "hostids",
+          "value": "10626"
+        },
+        {
+          "type": "3",
+          "name": "hostids",
+          "value": "10627"
+        },
+        {
+          "type": "1",
+          "name": "columns.name.0",
+          "value": "Servidor"
+        },
+        {
+          "type": "0",
+          "name": "columns.data.0",
+          "value": "2"
+        },
+        {
+          "type": "1",
+          "name": "columns.base_color.0",
+          "value": ""
+        },
+        {
+          "type": "1",
+          "name": "columns.name.1",
+          "value": "HD usado"
+        },
+        {
+          "type": "0",
+          "name": "columns.data.1",
+          "value": "1"
+        },
+        {
+          "type": "1",
+          "name": "columns.item.1",
+          "value": "/: Space utilization"
+        },
+        {
+          "type": "1",
+          "name": "columns.timeshift.1",
+          "value": ""
+        },
+        {
+          "type": "0",
+          "name": "columns.aggregate_function.1",
+          "value": "0"
+        },
+        {
+          "type": "0",
+          "name": "columns.history.1",
+          "value": "1"
+        },
+        {
+          "type": "0",
+          "name": "columns.display.1",
+          "value": "2"
+        },
+        {
+          "type": "0",
+          "name": "columns.decimal_places.1",
+          "value": "1"
+        },
+        {
+          "type": "1",
+          "name": "columns.base_color.1",
+          "value": "60A5FA"
+        },
+        {
+          "type": "1",
+          "name": "columns.min.1",
+          "value": "0"
+        },
+        {
+          "type": "1",
+          "name": "columns.max.1",
+          "value": "100"
+        },
+        {
+          "type": "1",
+          "name": "columnsthresholds.threshold.1.0",
+          "value": "90"
+        },
+        {
+          "type": "1",
+          "name": "columnsthresholds.color.1.0",
+          "value": "FBBF24"
+        },
+        {
+          "type": "1",
+          "name": "columnsthresholds.threshold.1.1",
+          "value": "95"
+        },
+        {
+          "type": "1",
+          "name": "columnsthresholds.color.1.1",
+          "value": "F87171"
+        },
+        {
+          "type": "1",
+          "name": "columns.name.2",
+          "value": "HD livre"
+        },
+        {
+          "type": "0",
+          "name": "columns.data.2",
+          "value": "1"
+        },
+        {
+          "type": "1",
+          "name": "columns.item.2",
+          "value": "Disco /: espaço livre"
+        },
+        {
+          "type": "1",
+          "name": "columns.timeshift.2",
+          "value": ""
+        },
+        {
+          "type": "0",
+          "name": "columns.aggregate_function.2",
+          "value": "0"
+        },
+        {
+          "type": "0",
+          "name": "columns.history.2",
+          "value": "1"
+        },
+        {
+          "type": "0",
+          "name": "columns.display.2",
+          "value": "1"
+        },
+        {
+          "type": "0",
+          "name": "columns.decimal_places.2",
+          "value": "1"
+        },
+        {
+          "type": "1",
+          "name": "columns.base_color.2",
+          "value": ""
+        },
+        {
+          "type": "1",
+          "name": "columns.name.3",
+          "value": "CPU"
+        },
+        {
+          "type": "0",
+          "name": "columns.data.3",
+          "value": "1"
+        },
+        {
+          "type": "1",
+          "name": "columns.item.3",
+          "value": "Linux: CPU utilization"
+        },
+        {
+          "type": "1",
+          "name": "columns.timeshift.3",
+          "value": ""
+        },
+        {
+          "type": "0",
+          "name": "columns.aggregate_function.3",
+          "value": "0"
+        },
+        {
+          "type": "0",
+          "name": "columns.history.3",
+          "value": "1"
+        },
+        {
+          "type": "0",
+          "name": "columns.display.3",
+          "value": "2"
+        },
+        {
+          "type": "0",
+          "name": "columns.decimal_places.3",
+          "value": "1"
+        },
+        {
+          "type": "1",
+          "name": "columns.base_color.3",
+          "value": "34D399"
+        },
+        {
+          "type": "1",
+          "name": "columns.min.3",
+          "value": "0"
+        },
+        {
+          "type": "1",
+          "name": "columns.max.3",
+          "value": "100"
+        },
+        {
+          "type": "1",
+          "name": "columnsthresholds.threshold.3.0",
+          "value": "70"
+        },
+        {
+          "type": "1",
+          "name": "columnsthresholds.color.3.0",
+          "value": "FBBF24"
+        },
+        {
+          "type": "1",
+          "name": "columnsthresholds.threshold.3.1",
+          "value": "90"
+        },
+        {
+          "type": "1",
+          "name": "columnsthresholds.color.3.1",
+          "value": "F87171"
+        },
+        {
+          "type": "1",
+          "name": "columns.name.4",
+          "value": "Memória"
+        },
+        {
+          "type": "0",
+          "name": "columns.data.4",
+          "value": "1"
+        },
+        {
+          "type": "1",
+          "name": "columns.item.4",
+          "value": "Linux: Memory utilization"
+        },
+        {
+          "type": "1",
+          "name": "columns.timeshift.4",
+          "value": ""
+        },
+        {
+          "type": "0",
+          "name": "columns.aggregate_function.4",
+          "value": "0"
+        },
+        {
+          "type": "0",
+          "name": "columns.history.4",
+          "value": "1"
+        },
+        {
+          "type": "0",
+          "name": "columns.display.4",
+          "value": "2"
+        },
+        {
+          "type": "0",
+          "name": "columns.decimal_places.4",
+          "value": "1"
+        },
+        {
+          "type": "1",
+          "name": "columns.base_color.4",
+          "value": "A78BFA"
+        },
+        {
+          "type": "1",
+          "name": "columns.min.4",
+          "value": "0"
+        },
+        {
+          "type": "1",
+          "name": "columns.max.4",
+          "value": "100"
+        },
+        {
+          "type": "1",
+          "name": "columnsthresholds.threshold.4.0",
+          "value": "80"
+        },
+        {
+          "type": "1",
+          "name": "columnsthresholds.color.4.0",
+          "value": "FBBF24"
+        },
+        {
+          "type": "1",
+          "name": "columnsthresholds.threshold.4.1",
+          "value": "90"
+        },
+        {
+          "type": "1",
+          "name": "columnsthresholds.color.4.1",
+          "value": "F87171"
+        },
+        {
+          "type": "3",
+          "name": "hostids",
+          "value": "10635"
+        },
+        {
+          "type": "0",
+          "name": "columns.aggregate_function.0",
+          "value": "0"
+        },
+        {
+          "type": "0",
+          "name": "columns.decimal_places.0",
+          "value": "2"
+        },
+        {
+          "type": "3",
+          "name": "hostids",
+          "value": "10649"
+        }
+      ]
+    },
+    {
+      "widgetid": "23532",
+      "type": "svggraph",
+      "name": "CPU · comparação entre servidores",
+      "x": "0",
+      "y": "4",
+      "width": "12",
+      "height": "4",
+      "view_mode": "0",
+      "fields": [
+        {
+          "type": "0",
+          "name": "rf_rate",
+          "value": "60"
+        },
+        {
+          "type": "0",
+          "name": "righty",
+          "value": "0"
+        },
+        {
+          "type": "1",
+          "name": "lefty_min",
+          "value": "0"
+        },
+        {
+          "type": "0",
+          "name": "show_problems",
+          "value": "1"
+        },
+        {
+          "type": "1",
+          "name": "lefty_max",
+          "value": "100"
+        },
+        {
+          "type": "1",
+          "name": "ds.hosts.0.0",
+          "value": "AtivBeneficios  VM DBProd"
+        },
+        {
+          "type": "1",
+          "name": "ds.items.0.0",
+          "value": "Linux: CPU utilization"
+        },
+        {
+          "type": "1",
+          "name": "ds.color.0",
+          "value": "34D399"
+        },
+        {
+          "type": "0",
+          "name": "ds.width.0",
+          "value": "3"
+        },
+        {
+          "type": "0",
+          "name": "ds.fill.0",
+          "value": "0"
+        },
+        {
+          "type": "0",
+          "name": "ds.transparency.0",
+          "value": "1"
+        },
+        {
+          "type": "1",
+          "name": "ds.hosts.1.0",
+          "value": "AstroCP01"
+        },
+        {
+          "type": "1",
+          "name": "ds.items.1.0",
+          "value": "Linux: CPU utilization"
+        },
+        {
+          "type": "1",
+          "name": "ds.color.1",
+          "value": "60A5FA"
+        },
+        {
+          "type": "0",
+          "name": "ds.width.1",
+          "value": "3"
+        },
+        {
+          "type": "0",
+          "name": "ds.fill.1",
+          "value": "0"
+        },
+        {
+          "type": "0",
+          "name": "ds.transparency.1",
+          "value": "1"
+        },
+        {
+          "type": "1",
+          "name": "ds.hosts.2.0",
+          "value": "AstroCP02"
+        },
+        {
+          "type": "1",
+          "name": "ds.items.2.0",
+          "value": "Linux: CPU utilization"
+        },
+        {
+          "type": "1",
+          "name": "ds.color.2",
+          "value": "C4B5FD"
+        },
+        {
+          "type": "0",
+          "name": "ds.width.2",
+          "value": "3"
+        },
+        {
+          "type": "0",
+          "name": "ds.fill.2",
+          "value": "0"
+        },
+        {
+          "type": "0",
+          "name": "ds.transparency.2",
+          "value": "1"
+        },
+        {
+          "type": "1",
+          "name": "ds.hosts.3.0",
+          "value": "AtivBeneficios  VM SistemaProd"
+        },
+        {
+          "type": "1",
+          "name": "ds.items.3.0",
+          "value": "Linux: CPU utilization"
+        },
+        {
+          "type": "1",
+          "name": "ds.color.3",
+          "value": "F59E0B"
+        },
+        {
+          "type": "0",
+          "name": "ds.width.3",
+          "value": "3"
+        },
+        {
+          "type": "0",
+          "name": "ds.fill.3",
+          "value": "0"
+        },
+        {
+          "type": "0",
+          "name": "ds.transparency.3",
+          "value": "1"
+        },
+        {
+          "type": "1",
+          "name": "ds.hosts.4.0",
+          "value": "uiluolt"
+        },
+        {
+          "type": "1",
+          "name": "ds.items.4.0",
+          "value": "Linux: CPU utilization"
+        },
+        {
+          "type": "1",
+          "name": "ds.color.4",
+          "value": "22D3EE"
+        },
+        {
+          "type": "0",
+          "name": "ds.width.4",
+          "value": "3"
+        },
+        {
+          "type": "0",
+          "name": "ds.fill.4",
+          "value": "0"
+        },
+        {
+          "type": "0",
+          "name": "ds.transparency.4",
+          "value": "1"
+        },
+        {
+          "type": "0",
+          "name": "legend",
+          "value": "1"
+        },
+        {
+          "type": "0",
+          "name": "legend_lines",
+          "value": "3"
+        },
+        {
+          "type": "0",
+          "name": "legend_columns",
+          "value": "2"
+        }
+      ]
+    },
+    {
+      "widgetid": "23533",
+      "type": "svggraph",
+      "name": "Disco / · ocupação por servidor",
+      "x": "12",
+      "y": "4",
+      "width": "12",
+      "height": "4",
+      "view_mode": "0",
+      "fields": [
+        {
+          "type": "0",
+          "name": "rf_rate",
+          "value": "60"
+        },
+        {
+          "type": "0",
+          "name": "righty",
+          "value": "0"
+        },
+        {
+          "type": "1",
+          "name": "lefty_min",
+          "value": "0"
+        },
+        {
+          "type": "0",
+          "name": "show_problems",
+          "value": "1"
+        },
+        {
+          "type": "1",
+          "name": "lefty_max",
+          "value": "100"
+        },
+        {
+          "type": "1",
+          "name": "ds.hosts.0.0",
+          "value": "AtivBeneficios  VM DBProd"
+        },
+        {
+          "type": "1",
+          "name": "ds.items.0.0",
+          "value": "/: Space utilization"
+        },
+        {
+          "type": "1",
+          "name": "ds.color.0",
+          "value": "34D399"
+        },
+        {
+          "type": "0",
+          "name": "ds.width.0",
+          "value": "3"
+        },
+        {
+          "type": "0",
+          "name": "ds.fill.0",
+          "value": "0"
+        },
+        {
+          "type": "0",
+          "name": "ds.transparency.0",
+          "value": "1"
+        },
+        {
+          "type": "1",
+          "name": "ds.hosts.1.0",
+          "value": "AstroCP01"
+        },
+        {
+          "type": "1",
+          "name": "ds.items.1.0",
+          "value": "/: Space utilization"
+        },
+        {
+          "type": "1",
+          "name": "ds.color.1",
+          "value": "60A5FA"
+        },
+        {
+          "type": "0",
+          "name": "ds.width.1",
+          "value": "3"
+        },
+        {
+          "type": "0",
+          "name": "ds.fill.1",
+          "value": "0"
+        },
+        {
+          "type": "0",
+          "name": "ds.transparency.1",
+          "value": "1"
+        },
+        {
+          "type": "1",
+          "name": "ds.hosts.2.0",
+          "value": "AstroCP02"
+        },
+        {
+          "type": "1",
+          "name": "ds.items.2.0",
+          "value": "/: Space utilization"
+        },
+        {
+          "type": "1",
+          "name": "ds.color.2",
+          "value": "C4B5FD"
+        },
+        {
+          "type": "0",
+          "name": "ds.width.2",
+          "value": "3"
+        },
+        {
+          "type": "0",
+          "name": "ds.fill.2",
+          "value": "0"
+        },
+        {
+          "type": "0",
+          "name": "ds.transparency.2",
+          "value": "1"
+        },
+        {
+          "type": "1",
+          "name": "ds.hosts.3.0",
+          "value": "AtivBeneficios  VM SistemaProd"
+        },
+        {
+          "type": "1",
+          "name": "ds.items.3.0",
+          "value": "/: Space utilization"
+        },
+        {
+          "type": "1",
+          "name": "ds.color.3",
+          "value": "F59E0B"
+        },
+        {
+          "type": "0",
+          "name": "ds.width.3",
+          "value": "3"
+        },
+        {
+          "type": "0",
+          "name": "ds.fill.3",
+          "value": "0"
+        },
+        {
+          "type": "0",
+          "name": "ds.transparency.3",
+          "value": "1"
+        },
+        {
+          "type": "1",
+          "name": "ds.hosts.4.0",
+          "value": "uiluolt"
+        },
+        {
+          "type": "1",
+          "name": "ds.items.4.0",
+          "value": "/: Space utilization"
+        },
+        {
+          "type": "1",
+          "name": "ds.color.4",
+          "value": "22D3EE"
+        },
+        {
+          "type": "0",
+          "name": "ds.width.4",
+          "value": "3"
+        },
+        {
+          "type": "0",
+          "name": "ds.fill.4",
+          "value": "0"
+        },
+        {
+          "type": "0",
+          "name": "ds.transparency.4",
+          "value": "1"
+        },
+        {
+          "type": "0",
+          "name": "legend",
+          "value": "1"
+        },
+        {
+          "type": "0",
+          "name": "legend_lines",
+          "value": "3"
+        },
+        {
+          "type": "0",
+          "name": "legend_columns",
+          "value": "2"
+        }
+      ]
+    },
+    {
+      "widgetid": "23534",
+      "type": "problems",
+      "name": "Servidores · problemas atuais",
+      "x": "0",
+      "y": "8",
+      "width": "24",
+      "height": "3",
+      "view_mode": "0",
+      "fields": [
+        {
+          "type": "0",
+          "name": "rf_rate",
+          "value": "30"
+        },
+        {
+          "type": "0",
+          "name": "show",
+          "value": "3"
+        },
+        {
+          "type": "0",
+          "name": "show_tags",
+          "value": "1"
+        },
+        {
+          "type": "0",
+          "name": "sort_triggers",
+          "value": "1"
+        },
+        {
+          "type": "0",
+          "name": "show_lines",
+          "value": "10"
+        },
+        {
+          "type": "3",
+          "name": "hostids",
+          "value": "10641"
+        },
+        {
+          "type": "3",
+          "name": "hostids",
+          "value": "10626"
+        },
+        {
+          "type": "3",
+          "name": "hostids",
+          "value": "10627"
+        },
+        {
+          "type": "3",
+          "name": "hostids",
+          "value": "10635"
+        },
+        {
+          "type": "3",
+          "name": "hostids",
+          "value": "10649"
+        }
+      ]
+    }
+  ]
+}

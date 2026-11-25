@@ -1,5 +1,13 @@
 # Templates de disponibilidade para Zabbix 6.4
 
+O monitoramento do serviço **Fail2Ban** nas duas VMs AtivBenefícios está em
+[FAIL2BAN.md](FAIL2BAN.md): template **GEST - Fail2Ban Linux**, coleta de 30 segundos
+e alerta Alto após dois minutos de inatividade, compatível com os dois agentes.
+
+O padrão da VM do sistema de OLT está em [UILUOLT.md](UILUOLT.md):
+**GEST-cpu-hd-uiluolt**, com CPU, memória, disco 90%/95%, comunicação do agente
+e serviços Node.js/PM2, MongoDB, GenieACS e OpenVPN.
+
 O arquivo [gest-monitoramento-web-icmp.yaml](templates/gest-monitoramento-web-icmp.yaml)
 contém dois templates do grupo **GEST**:
 

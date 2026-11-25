@@ -1,6 +1,6 @@
 # Dashboard GEST
 
-O dashboard **GEST · Operação e servidores** reúne a operação em nove páginas. A troca
+O dashboard **GEST · Operação e servidores** reúne a operação em dez páginas. A troca
 automática de página fica desligada para manter a visão escolhida na tela.
 Em telas menores, o controle nativo para recolher o menu lateral libera espaço
 para os cartões e tabelas; a configuração foi conferida também nesse modo.
@@ -21,6 +21,7 @@ acompanha a página exibida.
 | Banco AtivBenefícios Prod | CPU, ocupação e espaço livre do disco e disponibilidade MySQL exclusivamente desse host; gráficos e capacidade do disco; problemas do banco |
 | AstroCP01 | CPU, ocupação e espaço livre do disco e memória exclusivamente desse host; gráficos e capacidade do disco; problemas do host |
 | AstroCP02 | CPU, ocupação e espaço livre do disco e memória exclusivamente desse host; gráficos e capacidade do disco; problemas do host |
+| uiluolt | CPU, memória, ocupação e espaço livre do disco, disponibilidade do agente, tempo ligado, tráfego ens18 e problemas exclusivamente da VM do sistema de OLT |
 | Aplicações | Retorno HTTP do site AtivBenefícios, front e API GestClin; resultado dos cenários HTTPS; problemas das aplicações; histórico do tempo de resposta |
 | Infraestrutura | Informações do sistema Zabbix, disponibilidade SNMP, problemas de rede e capacidade dos servidores Linux |
 | UrTelecom · OLT ZTE Titan | Resumo compacto em uma tela: SNMP, CPU, memória, uptime, ONUs, tráfego Ethernet e problemas da OLT; incluído na sequência do slideshow |
@@ -38,6 +39,31 @@ problemas àquela máquina. O comparativo inclui banco, servidor web e os dois
 Astro. Os indicadores MySQL ficam na página do banco; Nginx e PHP-FPM ficam na
 página do servidor web. Os cartões dos serviços exibem o estado e a quantidade
 de processos encontrada pelo agente.
+
+O host **uiluolt** também participa das tabelas da **Visão geral** e de
+**Servidores**, dos gráficos comparativos de CPU/disco e dos problemas dos
+servidores. Ele pertence aos grupos **GEST**, **Linux servers** e
+**Virtual machines**. Esses widgets usam seleção explícita de hosts: incluir
+uma VM no grupo GEST, sozinho, não a acrescenta à seleção. O configurador
+[configurar_servidores_uiluolt.py](configurar_servidores_uiluolt.py) atualiza os
+cinco widgets e preserva seus IDs e os demais conteúdos, incluindo o log de ações:
+
+```bash
+python3 zabbix/configurar_servidores_uiluolt.py --apply
+```
+
+As duas tabelas têm altura de quatro unidades para mostrar os cinco servidores
+sem rolagem interna. Os widgets abaixo foram deslocados uma linha, mantendo seus
+IDs, filtros e conteúdos.
+
+Os gráficos SVG selecionam hosts pelo nome exibido. As referências antigas
+`Banco AtivBeneficios Prod` e `Http AtivBeneficios 200` foram atualizadas para
+os nomes atuais das VMs AtivBenefícios. O snapshot dos cinco widgets fica em
+[gest-servidores-comparativos.json](dashboards/gest-servidores-comparativos.json).
+
+![Comparativo dos cinco servidores com uiluolt](../docs/screenshots/zabbix-gest-servidores-uiluolt.png)
+
+[Captura da Visão geral com os cinco servidores](../docs/screenshots/zabbix-gest-visao-geral-uiluolt.png).
 
 O disco comparado é o sistema de arquivos raiz `/`. O espaço livre representa
 a capacidade disponível reportada pelo agente; reservas do sistema de arquivos
@@ -132,3 +158,35 @@ O intervalo permanece em 30 segundos; o slideshow foi parado após o teste.
 ## Dashboard UrTelecom · OLT ZTE Titan
 
 A OLT tem um painel próprio com seis páginas: visão geral, GPON, VLANs, uplinks, hardware/óptica e eventos/notificações. Os detalhes, capturas e instruções de manutenção estão em [ZTE-TITAN.md](ZTE-TITAN.md#dashboard-da-olt).
+
+## VM uiluolt
+
+A aba **uiluolt** fica depois dos servidores Astro e participa do slideshow de
+30 segundos. Seus 12 widgets usam somente o host `uiluolt`, monitorado pelo
+template **GEST-cpu-hd-uiluolt**, que herda a base Linux, com Agent 2 na VM Debian 12. A faixa fina de
+identificação também acompanha essa página em tela cheia.
+
+![VM uiluolt em tela cheia](../docs/screenshots/zabbix-gest-uiluolt.png)
+
+Há cartões de CPU, memória utilizada, ocupação e espaço disponível na raiz,
+disponibilidade do agente e tempo ligado. Os gráficos mostram CPU, memória,
+disco e tráfego de entrada/saída da interface `ens18`; a tabela de capacidade e
+os problemas atuais completam a página. O indicador de disponibilidade usa
+`zabbix[host,agent,available]`, calculado pelo servidor Zabbix. O espaço livre usa
+um item adicional `vfs.fs.size[/,free]`, coletado a cada minuto apenas nessa VM.
+
+As cores de disco indicam 90%/95%. Os alertas GEST desse host usam esses limites
+por três coletas consecutivas, com recuperação abaixo de 88%/93%. O widget de
+problemas também apresenta eventos dos serviços Node.js/PM2, MongoDB, GenieACS
+e OpenVPN verificados pelo [template uiluolt](UILUOLT.md). Os cartões de recursos
+não confirmam o funcionamento interno da aplicação web.
+
+Para reaplicar a página usando a conexão configurada no aplicativo:
+
+```bash
+python3 zabbix/configurar_dashboard_uiluolt.py --apply
+```
+
+O configurador preserva as outras páginas, seus widgets e o log de ações,
+salva backup privado em `~/.local/share/alert-zabbix/backups/gest-before-uiluolt-*.json`
+e exporta a página em [gest-uiluolt.json](dashboards/gest-uiluolt.json).
