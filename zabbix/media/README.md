@@ -1,5 +1,13 @@
 # WhatsApp ATIV / Durvs
 
+O agrupamento de entregas das mídias WhatsApp e Telegram está documentado em
+[grouping/README.md](grouping/README.md). Ele reúne mensagens durante 30 segundos
+e divide resumos longos, sem alterar problemas, triggers, telas ou dashboards.
+Quando ativado, o script das mídias existentes é substituído por
+[grouped-delivery.js](grouped-delivery.js); os contratos de cada serviço e os
+destinatários são preservados. O script ATIV abaixo continua sendo a opção de
+envio direto e a referência para o formato original.
+
 O script [whatsapp-ativ-durvs.js](whatsapp-ativ-durvs.js) implementa a chamada
 WhatsApp de `Commons::sendMessageWhatsAppById`: POST JSON com `text` e `id`,
 autenticado pelo cabeçalho `Authorization: Bearer …`. O texto mantém os campos

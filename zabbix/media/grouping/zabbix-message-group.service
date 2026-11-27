@@ -1,0 +1,24 @@
+[Unit]
+Description=Agrupamento de entregas WhatsApp e Telegram do Zabbix
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=zabbix
+Group=zabbix
+ExecStart=/usr/bin/python3 /opt/zabbix-message-group/service.py --config /etc/zabbix/message-group.json --database /var/lib/zabbix-message-group/queue.sqlite3
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=25
+StateDirectory=zabbix-message-group
+StateDirectoryMode=0700
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+
+[Install]
+WantedBy=multi-user.target
